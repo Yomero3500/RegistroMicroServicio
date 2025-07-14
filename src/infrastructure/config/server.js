@@ -41,9 +41,14 @@ class Server {
   }
 
   setupRoutes() {
-    // Importar el controlador, caso de uso y las rutas
+    // Importar el controlador, casos de uso y las rutas
     const StudentController = require('../driving/api/StudentController');
     const ImportStudentsUseCase = require('../../application/usecases/ImportStudentsUseCase');
+    const GetAllStudentsUseCase = require('../../application/usecases/GetAllStudentsUseCase');
+    const CreateStudentUseCase = require('../../application/usecases/CreateStudentUseCase');
+    const UpdateStudentUseCase = require('../../application/usecases/UpdateStudentUseCase');
+    const DeleteStudentUseCase = require('../../application/usecases/DeleteStudentUseCase');
+    const GetStudentHistoryUseCase = require('../../application/usecases/GetStudentHistoryUseCase');
     const MySQLStudentRepo = require('../driven/persistence/MySQLStudentRepo');
     const CsvParserImpl = require('../driven/csv/CsvParserImpl');
     const studentRoutes = require('../driving/api/routes');
@@ -51,17 +56,40 @@ class Server {
     // Crear instancias de las dependencias
     const studentRepository = new MySQLStudentRepo();
     const csvParser = new CsvParserImpl();
+    
+    // Crear instancias de todos los casos de uso
     const importStudentsUseCase = new ImportStudentsUseCase(studentRepository, csvParser);
+    const getAllStudentsUseCase = new GetAllStudentsUseCase(studentRepository);
+    const createStudentUseCase = new CreateStudentUseCase(studentRepository);
+    const updateStudentUseCase = new UpdateStudentUseCase(studentRepository);
+    const deleteStudentUseCase = new DeleteStudentUseCase(studentRepository);
+    const getStudentHistoryUseCase = new GetStudentHistoryUseCase(studentRepository);
 
-    // Crear instancia del controlador con el caso de uso
-    const studentController = new StudentController(importStudentsUseCase);
+    // Crear instancia del controlador con todos los casos de uso
+    const studentController = new StudentController(
+      importStudentsUseCase,
+      getAllStudentsUseCase,
+      createStudentUseCase,
+      updateStudentUseCase,
+      deleteStudentUseCase,
+      getStudentHistoryUseCase
+    );
 
     // Configurar las rutas
-    this.app.use('/api', studentRoutes(studentController, this.upload));
+    this.app.use('/alumnos', studentRoutes(studentController, this.upload));
 
     // Ruta de prueba
     this.app.get('/', (req, res) => {
-      res.json({ message: 'API de Registro de Estudiantes con Sequelize' });
+      res.json({ 
+        message: 'API de Registro de Estudiantes con Sequelize',
+        endpoints: {
+          'GET /api/alumnos/listar': 'Obtener todos los alumnos',
+          'POST /api/alumnos/crear': 'Crear nuevo alumno',
+          'PUT /api/alumnos/:id': 'Actualizar alumno',
+          'DELETE /api/alumnos/:id': 'Eliminar alumno',
+          'POST /api/alumnos/cargar-csv': 'Importar alumnos desde CSV'
+        }
+      });
     });
 
     // Manejador de errores

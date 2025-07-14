@@ -1,6 +1,5 @@
 const StudentRepository = require('../../../application/ports/output/StudentRepository');
 const database = require('../../config/database');
-const ModelInitializer = require('./models');
 
 class MySQLStudentRepo extends StudentRepository {
   constructor() {
@@ -11,9 +10,17 @@ class MySQLStudentRepo extends StudentRepository {
 
   async initialize() {
     if (!this.initialized) {
+      console.log('🔄 MySQLStudentRepo: Obteniendo conexión Sequelize...');
       const sequelize = await database.getConnection();
-      const models = await ModelInitializer.initializeModels(sequelize);
-      this.Student = models.Student;
+      
+      // Los modelos ya están inicializados en database.js, solo necesitamos obtener el modelo
+      this.Student = sequelize.models.Student;
+      
+      if (!this.Student) {
+        throw new Error('Modelo Student no encontrado. Asegúrate de que los modelos estén inicializados correctamente.');
+      }
+      
+      console.log('✅ MySQLStudentRepo: Modelo Student obtenido correctamente');
       this.initialized = true;
     }
   }
@@ -24,24 +31,25 @@ class MySQLStudentRepo extends StudentRepository {
       
       const savedStudent = await this.Student.create({
         matricula: student.matricula,
-        nombres: student.nombres,
-        apellidos: student.apellidos,
-        carreraId: student.carreraId,
-        planEstudiosId: student.planEstudiosId,
-        estatusGeneral: student.estatusGeneral,
+        nombre: student.nombre,
+        carrera: student.carrera,
+        estatusAlumno: student.estatusAlumno,
         cuatrimestreActual: student.cuatrimestreActual,
-        email: student.email,
-        numeroTelefono: student.numeroTelefono,
-        nombreTutorLegal: student.nombreTutorLegal,
-        tutorAcademicoId: student.tutorAcademicoId,
-        telefonoTutorLegal: student.telefonoTutorLegal
+        grupoActual: student.grupoActual,
+        materia: student.materia,
+        periodo: student.periodo,
+        estatusMateria: student.estatusMateria,
+        final: student.final,
+        extra: student.extra,
+        estatusCardex: student.estatusCardex,
+        periodoCursado: student.periodoCursado,
+        planEstudiosClave: student.planEstudiosClave,
+        creditos: student.creditos,
+        tutorAcademico: student.tutorAcademico
       });
 
       return savedStudent.toJSON();
     } catch (error) {
-      if (error.name === 'SequelizeUniqueConstraintError') {
-        throw new Error(`La matrícula ${student.matricula} ya existe`);
-      }
       if (error.name === 'SequelizeValidationError') {
         const messages = error.errors.map(err => err.message).join(', ');
         throw new Error(`Error de validación: ${messages}`);
@@ -54,8 +62,10 @@ class MySQLStudentRepo extends StudentRepository {
     try {
       await this.initialize();
       
+      // Busca el primer registro de la matrícula (para compatibilidad)
       const student = await this.Student.findOne({
-        where: { matricula }
+        where: { matricula },
+        order: [['id', 'ASC']]
       });
 
       return student ? student.toJSON() : null;
@@ -64,12 +74,28 @@ class MySQLStudentRepo extends StudentRepository {
     }
   }
 
+  async findAllByMatricula(matricula) {
+    try {
+      await this.initialize();
+      
+      // Busca todos los registros de la matrícula (historial completo)
+      const students = await this.Student.findAll({
+        where: { matricula },
+        order: [['id', 'ASC']]
+      });
+
+      return students.map(student => student.toJSON());
+    } catch (error) {
+      throw new Error(`Error al buscar historial del estudiante: ${error.message}`);
+    }
+  }
+
   async findAll() {
     try {
       await this.initialize();
       
       const students = await this.Student.findAll({
-        order: [['createdAt', 'DESC']]
+        order: [['id', 'DESC']]
       });
 
       return students.map(student => student.toJSON());

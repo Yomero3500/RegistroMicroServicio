@@ -18,13 +18,8 @@ class DatabaseConnection {
           host: process.env.DB_HOST,
           port: parseInt(process.env.DB_PORT) || 3306,
           dialect: 'mysql',
-          logging: false,
-          pool: {
-            max: 5,
-            min: 0,
-            acquire: 30000,
-            idle: 10000
-          }
+          logging: true,
+
         }
       );
 
@@ -32,6 +27,19 @@ class DatabaseConnection {
       
       // Probar la conexión
       await this.sequelize.authenticate();
+      
+      console.log('📊 Inicializando modelos...');
+      // Inicializar modelos después de la conexión
+      try {
+        const ModelInitializer = require('../driven/persistence/models');
+        console.log('📦 ModelInitializer importado correctamente');
+        await ModelInitializer.initializeModels(this.sequelize);
+        console.log('🎉 Modelos inicializados exitosamente');
+      } catch (modelError) {
+        console.error('❌ Error específico al inicializar modelos:', modelError.message);
+        console.error('Stack trace del error de modelos:', modelError.stack);
+        throw modelError;
+      }
       
       console.log('✅ Conexión a la base de datos establecida exitosamente con Sequelize');
       

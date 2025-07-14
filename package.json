@@ -4,7 +4,7 @@
   "description": "Microservicio para registro de alumnos con arquitectura hexagonal",
   "main": "src/infrastructure/config/server.js",
   "scripts": {
-    "start": "node src/infrastructure/config/server.js",
+    "start": "nodemon src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest"
   },
