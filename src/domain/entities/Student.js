@@ -1,3 +1,5 @@
+const Validators = require('../../shared/utils/validators');
+
 class Student {
   constructor({
     id,
@@ -30,8 +32,54 @@ class Student {
   }
 
   static create(studentData) {
-    // Aquí irían las validaciones de dominio
+    // Validaciones de dominio
+    Validators.validateNotEmpty(studentData.matricula, 'matrícula');
+    Validators.validateMatricula(studentData.matricula);
+    Validators.validateNotEmpty(studentData.nombres, 'nombres');
+    Validators.validateNotEmpty(studentData.apellidos, 'apellidos');
+    
+    if (studentData.email) {
+      Validators.validateEmail(studentData.email);
+    }
+    
+    if (studentData.numeroTelefono) {
+      Validators.validatePhone(studentData.numeroTelefono);
+    }
+    
+    if (studentData.telefonoTutorLegal) {
+      Validators.validatePhone(studentData.telefonoTutorLegal);
+    }
+
     return new Student(studentData);
+  }
+
+  // Método para obtener el nombre completo
+  getFullName() {
+    return `${this.nombres} ${this.apellidos}`;
+  }
+
+  // Método para verificar si el estudiante está activo
+  isActive() {
+    return this.estatusGeneral === 'Inscrito';
+  }
+
+  // Método para obtener los datos como un objeto plano
+  toPlainObject() {
+    return {
+      id: this.id,
+      matricula: this.matricula,
+      nombres: this.nombres,
+      apellidos: this.apellidos,
+      carreraId: this.carreraId,
+      planEstudiosId: this.planEstudiosId,
+      estatusGeneral: this.estatusGeneral,
+      cuatrimestreActual: this.cuatrimestreActual,
+      email: this.email,
+      numeroTelefono: this.numeroTelefono,
+      nombreTutorLegal: this.nombreTutorLegal,
+      tutorAcademicoId: this.tutorAcademicoId,
+      telefonoTutorLegal: this.telefonoTutorLegal
+    };
   }
 }
 

@@ -2,9 +2,9 @@ const { ValidationError } = require('../exceptions/DomainError');
 
 class Validators {
   static validateMatricula(matricula) {
-    const matriculaRegex = /^\d{8}$/;
+    const matriculaRegex = /^\d{6}$/;
     if (!matriculaRegex.test(matricula)) {
-      throw new ValidationError('La matrícula debe contener 8 dígitos');
+      throw new ValidationError('La matrícula debe contener 6 dígitos');
     }
   }
 

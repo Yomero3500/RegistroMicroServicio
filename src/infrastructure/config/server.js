@@ -44,10 +44,14 @@ class Server {
     // Importar el controlador, caso de uso y las rutas
     const StudentController = require('../driving/api/StudentController');
     const ImportStudentsUseCase = require('../../application/usecases/ImportStudentsUseCase');
+    const MySQLStudentRepo = require('../driven/persistence/MySQLStudentRepo');
+    const CsvParserImpl = require('../driven/csv/CsvParserImpl');
     const studentRoutes = require('../driving/api/routes');
 
-    // Crear instancia del caso de uso (temporalmente sin repositorio)
-    const importStudentsUseCase = new ImportStudentsUseCase({});
+    // Crear instancias de las dependencias
+    const studentRepository = new MySQLStudentRepo();
+    const csvParser = new CsvParserImpl();
+    const importStudentsUseCase = new ImportStudentsUseCase(studentRepository, csvParser);
 
     // Crear instancia del controlador con el caso de uso
     const studentController = new StudentController(importStudentsUseCase);
@@ -57,7 +61,7 @@ class Server {
 
     // Ruta de prueba
     this.app.get('/', (req, res) => {
-      res.json({ message: 'API de Registro de Estudiantes' });
+      res.json({ message: 'API de Registro de Estudiantes con Sequelize' });
     });
 
     // Manejador de errores
@@ -66,13 +70,11 @@ class Server {
 
   start() {
     this.app.listen(this.port, () => {
-      console.log(`Servidor corriendo en puerto ${this.port}`);
+      console.log(`🚀 Servidor corriendo en puerto ${this.port}`);
+      console.log(`📊 API disponible en: http://localhost:${this.port}`);
+      console.log(`📁 Endpoint de prueba: http://localhost:${this.port}/`);
     });
   }
 }
 
-// Crear y exportar una instancia del servidor
-const server = new Server();
-server.start();
-
-module.exports = server;
+module.exports = Server;
