@@ -102,8 +102,6 @@ class ImportStudentsUseCase {
   }
 
   mapCsvToStudent(csvRow) {
-    // Mapear las columnas del CSV a las propiedades del estudiante
-    // Normalizar nombres de columnas (quitar espacios y convertir a lowercase)
     const normalizedRow = {};
     Object.keys(csvRow).forEach(key => {
       const normalizedKey = key.trim().toLowerCase().replace(/\s+/g, '');
