@@ -1,15 +1,25 @@
 const Student = require('../../domain/entities/Student');
+const PersonalIntegrationService = require('../../infrastructure/services/PersonalIntegrationService');
 
 class ImportStudentsUseCase {
   constructor(studentRepository, csvParser) {
     this.studentRepository = studentRepository;
     this.csvParser = csvParser;
+    this.personalService = new PersonalIntegrationService();
   }
 
   async execute(filePath) {
     try {
       console.log('🔍 Iniciando procesamiento de archivo CSV...');
       console.log('📁 Ruta del archivo:', filePath);
+      
+      // Verificar disponibilidad del microservicio de Personal
+      const personalServiceAvailable = await this.personalService.checkServiceAvailability();
+      console.log('🔗 Microservicio de Personal:', personalServiceAvailable ? 'Disponible' : 'No disponible - usando datos por defecto');
+      
+      // Obtener lista de tutores válidos
+      const tutoresValidos = await this.personalService.getTutores();
+      console.log('👥 Tutores válidos obtenidos:', tutoresValidos.map(t => t.nombre));
       
       // Verificar si el archivo existe y obtener información
       const fs = require('fs');
@@ -49,6 +59,7 @@ class ImportStudentsUseCase {
       
       const results = [];
       const errors = [];
+      const tutorWarnings = [];
 
       for (let i = 0; i < csvData.length; i++) {
         const row = csvData[i];
@@ -58,6 +69,26 @@ class ImportStudentsUseCase {
           // Mapear los datos del CSV a la estructura del estudiante
           const studentData = this.mapCsvToStudent(row);
           console.log('📝 Datos mapeados del estudiante:', studentData);
+          
+          // Validar el tutor académico con el microservicio de Personal
+          if (studentData.tutorAcademico) {
+            const tutorValido = tutoresValidos.find(t => 
+              t.nombre.toLowerCase() === studentData.tutorAcademico.toLowerCase()
+            );
+            
+            if (!tutorValido) {
+              const warning = `Tutor académico "${studentData.tutorAcademico}" no encontrado en el sistema de Personal para el estudiante ${studentData.matricula}`;
+              console.warn(`⚠️ ${warning}`);
+              tutorWarnings.push({
+                row: i + 1,
+                matricula: studentData.matricula,
+                tutorNombre: studentData.tutorAcademico,
+                warning: warning
+              });
+            } else {
+              console.log(`✅ Tutor académico "${studentData.tutorAcademico}" validado correctamente`);
+            }
+          }
           
           // Crear la entidad Student con validaciones
           const student = Student.create(studentData);
@@ -84,13 +115,16 @@ class ImportStudentsUseCase {
         successfullyProcessed: results.length,
         errors: errors.length,
         data: results,
-        errorDetails: errors
+        errorDetails: errors,
+        tutorWarnings: tutorWarnings,
+        tutorValidationEnabled: personalServiceAvailable
       };
       
       console.log('📈 Resumen final del procesamiento:');
       console.log('  - Total de filas procesadas:', finalResult.totalRows);
       console.log('  - Estudiantes guardados exitosamente:', finalResult.successfullyProcessed);
       console.log('  - Errores encontrados:', finalResult.errors);
+      console.log('  - Advertencias de tutores:', tutorWarnings.length);
       
       return finalResult;
 
@@ -113,12 +147,12 @@ class ImportStudentsUseCase {
       nombre: normalizedRow.nombre,
       carrera: normalizedRow.carrera,
       estatusAlumno: normalizedRow.estatusalumno || normalizedRow.estatus_alumno || 'Activo',
-      cuatrimestreActual: normalizedRow.cuatrimestreactual || normalizedRow.cuatrimestre_actual,
+      cuatrimestreActual: normalizedRow.semestre || normalizedRow.cuatrimestreactual || normalizedRow.cuatrimestre_actual || '1',
       grupoActual: normalizedRow.grupoactual || normalizedRow.grupo_actual,
-      materia: normalizedRow.materia,
+      materia: normalizedRow.materias || normalizedRow.materia,
       periodo: normalizedRow.periodo,
-      estatusMateria: normalizedRow.estatusmateria || normalizedRow.estatus_materia || 'Sin cursar',
-      final: normalizedRow.final ? parseInt(normalizedRow.final) : 0,
+      estatusMateria: normalizedRow.estado || normalizedRow.estatusmateria || normalizedRow.estatus_materia || 'Sin cursar',
+      final: normalizedRow.calificacion ? parseInt(normalizedRow.calificacion) : normalizedRow.final ? parseInt(normalizedRow.final) : 0,
       extra: normalizedRow.extra || 'N/A',
       estatusCardex: normalizedRow.estatuscardex || normalizedRow.estatus_cardex || 'Vigente',
       periodoCursado: normalizedRow.periodocursado || normalizedRow.periodo_cursado,

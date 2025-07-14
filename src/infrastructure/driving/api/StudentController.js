@@ -47,9 +47,17 @@ class StudentController {
 
   async getAllStudents(req, res, next) {
     try {
+      console.log('🔍 StudentController: Obteniendo todos los estudiantes...');
+      
       const result = await this.getAllStudentsUseCase.execute();
       
+      console.log('📊 StudentController: Resultado del caso de uso:', {
+        success: result.success,
+        totalEstudiantes: result.data ? result.data.length : 0
+      });
+      
       if (!result.success) {
+        console.log('ℹ️ StudentController: No se encontraron estudiantes');
         return res.status(404).json({
           success: false,
           message: result.message,
@@ -57,8 +65,14 @@ class StudentController {
         });
       }
 
-      res.json(result.data);
+      console.log('✅ StudentController: Estudiantes obtenidos exitosamente');
+      res.json({
+        success: true,
+        data: result.data,
+        total: result.total
+      });
     } catch (error) {
+      console.error('💥 StudentController: Error al obtener estudiantes:', error.message);
       next(error);
     }
   }
