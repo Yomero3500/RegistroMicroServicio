@@ -1,0 +1,51 @@
+Matricula,Nombre,Carrera,EstatusAlumno,CuatrimestreActual,GrupoActual,Materia,Periodo,EstatusMateria,Final,Extra,EstatusCardex,PeriodoCursado,PlanEstudiosClave,Creditos,TutorAcademico
+223074,María Fernanda López,Ingeniería en Software,Inscrito,4,A,Inglés I,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,92,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,004,4,Jose Alberto
+223074,María Fernanda López,Ingeniería en Software,Inscrito,4,A,Química Básica,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,85,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,004,5,Jose Alberto
+223074,María Fernanda López,Ingeniería en Software,Inscrito,4,A,Álgebra Lineal,ENERO-ABRIL 2023,Aprobada,88,N/A,Ordinario,ENERO-ABRIL 2023,004,6,Jose Alberto
+223074,María Fernanda López,Ingeniería en Software,Inscrito,4,A,Fundamentos de Computación,ENERO-ABRIL 2023,Aprobada,84,N/A,Ordinario,ENERO-ABRIL 2023,004,5,Jose Alberto
+223074,María Fernanda López,Ingeniería en Software,Inscrito,4,A,Algoritmos,MAYO-AGOSTO 2023,Cursando,0,N/A,Ordinario,MAYO-AGOSTO 2023,004,7,Jose Alberto
+223082,Carlos Eduardo Ramírez,Ingeniería en Software,Inscrito,5,B,Matemáticas Discretas,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,77,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,004,7,Mai
+223082,Carlos Eduardo Ramírez,Ingeniería en Software,Inscrito,5,B,Expresión Oral y Escrita I,ENERO-ABRIL 2023,Aprobada,95,N/A,Ordinario,ENERO-ABRIL 2023,004,4,Mai
+223082,Carlos Eduardo Ramírez,Ingeniería en Software,Inscrito,5,B,Inglés II,ENERO-ABRIL 2023,Aprobada,89,N/A,Ordinario,ENERO-ABRIL 2023,004,6,Mai
+223082,Carlos Eduardo Ramírez,Ingeniería en Software,Inscrito,5,B,Desarrollo Humano y Valores,MAYO-AGOSTO 2023,Aprobada,84,N/A,Ordinario,MAYO-AGOSTO 2023,004,3,Mai
+223082,Carlos Eduardo Ramírez,Ingeniería en Software,Inscrito,5,B,Cálculo Diferencial,MAYO-AGOSTO 2023,Cursando,0,N/A,Ordinario,MAYO-AGOSTO 2023,004,6,Mai
+223096,Ana Patricia Hernández,Ingeniería en Software,Baja Académica,3,C,Programación Orientada a Objetos,ENERO-ABRIL 2023,Aprobada,83,N/A,Ordinario,ENERO-ABRIL 2023,004,7,Jose Alberto
+223096,Ana Patricia Hernández,Ingeniería en Software,Baja Académica,3,C,Estructura de Datos,ENERO-ABRIL 2023,Aprobada,73,N/A,Ordinario,ENERO-ABRIL 2023,004,6,Jose Alberto
+223096,Ana Patricia Hernández,Ingeniería en Software,Baja Académica,3,C,Ingeniería de Software,MAYO-AGOSTO 2023,Aprobada,88,N/A,Ordinario,MAYO-AGOSTO 2023,004,6,Jose Alberto
+223096,Ana Patricia Hernández,Ingeniería en Software,Baja Académica,3,C,Programación Visual,MAYO-AGOSTO 2023,Reprobada,30,N/A,Ordinario,MAYO-AGOSTO 2023,004,7,Jose Alberto
+223096,Ana Patricia Hernández,Ingeniería en Software,Baja Académica,3,C,Inglés III,SEPTIEMBRE-DICIEMBRE 2023,Reprobada,45,N/A,Repetición,SEPTIEMBRE-DICIEMBRE 2023,004,6,Jose Alberto
+223103,Luis Miguel González,Ingeniería en Software,Inscrito,6,A,Base de Datos Avanzadas,SEPTIEMBRE-DICIEMBRE 2023,Aprobada,75,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2023,004,6,Mai
+223103,Luis Miguel González,Ingeniería en Software,Inscrito,6,A,Ingeniería de Requerimientos,SEPTIEMBRE-DICIEMBRE 2023,Aprobada,82,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2023,004,6,Mai
+223103,Luis Miguel González,Ingeniería en Software,Inscrito,6,A,Programación Web,Sin Cursar,Sin cursar,0,N/A,N/A,N/A,004,7,Mai
+223103,Luis Miguel González,Ingeniería en Software,Inscrito,6,A,Diseño de Interfaces,Sin Cursar,Sin cursar,0,N/A,N/A,N/A,004,7,Mai
+223103,Luis Miguel González,Ingeniería en Software,Inscrito,6,A,Matemáticas para Ingeniería I,Sin Cursar,Sin cursar,0,N/A,N/A,N/A,004,6,Mai
+223115,Andrea Sofía Mendoza,Ingeniería en Software,Inscrito,3,A,Fundamentos de Programación,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,90,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,005,6,Jose Alberto
+223115,Andrea Sofía Mendoza,Ingeniería en Software,Inscrito,3,A,Matemáticas Discretas,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,88,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,005,7,Jose Alberto
+223115,Andrea Sofía Mendoza,Ingeniería en Software,Inscrito,3,A,Inglés I,ENERO-ABRIL 2023,Aprobada,85,N/A,Ordinario,ENERO-ABRIL 2023,005,4,Jose Alberto
+223115,Andrea Sofía Mendoza,Ingeniería en Software,Inscrito,3,A,Estructura de Datos,ENERO-ABRIL 2023,Cursando,0,N/A,Ordinario,ENERO-ABRIL 2023,005,6,Jose Alberto
+223127,Roberto Carlos Vega,Ingeniería en Software,Inscrito,5,B,Base de Datos,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,92,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,005,8,Mai
+223127,Roberto Carlos Vega,Ingeniería en Software,Inscrito,5,B,Redes de Computadoras,ENERO-ABRIL 2023,Aprobada,87,N/A,Ordinario,ENERO-ABRIL 2023,005,7,Mai
+223127,Roberto Carlos Vega,Ingeniería en Software,Inscrito,5,B,Sistemas Operativos,ENERO-ABRIL 2023,Aprobada,89,N/A,Ordinario,ENERO-ABRIL 2023,005,6,Mai
+223127,Roberto Carlos Vega,Ingeniería en Software,Inscrito,5,B,Seguridad Informática,MAYO-AGOSTO 2023,Cursando,0,N/A,Ordinario,MAYO-AGOSTO 2023,005,5,Mai
+223134,Isabella Torres Ruiz,Ingeniería en Software,Inscrito,2,C,Estadística I,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,79,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,006,5,Jose Alberto
+223134,Isabella Torres Ruiz,Ingeniería en Software,Inscrito,2,C,Investigación de Operaciones,ENERO-ABRIL 2023,Aprobada,86,N/A,Ordinario,ENERO-ABRIL 2023,006,6,Jose Alberto
+223134,Isabella Torres Ruiz,Ingeniería en Software,Inscrito,2,C,Procesos Industriales,ENERO-ABRIL 2023,Cursando,0,N/A,Ordinario,ENERO-ABRIL 2023,006,7,Jose Alberto
+223141,Diego Alejandro Moreno,Ingeniería en Software,Inscrito,4,A,Control de Calidad,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,91,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,006,6,Mai
+223141,Diego Alejandro Moreno,Ingeniería en Software,Inscrito,4,A,Gestión de Proyectos,ENERO-ABRIL 2023,Aprobada,88,N/A,Ordinario,ENERO-ABRIL 2023,006,7,Mai
+223141,Diego Alejandro Moreno,Ingeniería en Software,Inscrito,4,A,Ergonomía,MAYO-AGOSTO 2023,Aprobada,85,N/A,Ordinario,MAYO-AGOSTO 2023,006,5,Mai
+223141,Diego Alejandro Moreno,Ingeniería en Software,Inscrito,4,A,Manufactura Esbelta,MAYO-AGOSTO 2023,Cursando,0,N/A,Ordinario,MAYO-AGOSTO 2023,006,6,Mai
+223158,Valeria Guadalupe Castro,Ingeniería en Software,Inscrito,1,B,Contabilidad General,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,84,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,007,5,Jose Alberto
+223158,Valeria Guadalupe Castro,Ingeniería en Software,Inscrito,1,B,Fundamentos de Administración,ENERO-ABRIL 2023,Aprobada,90,N/A,Ordinario,ENERO-ABRIL 2023,007,6,Jose Alberto
+223158,Valeria Guadalupe Castro,Ingeniería en Software,Inscrito,1,B,Matemáticas Administrativas,ENERO-ABRIL 2023,Cursando,0,N/A,Ordinario,ENERO-ABRIL 2023,007,4,Jose Alberto
+223165,Sebastián Arturo Jiménez,Ingeniería en Software,Inscrito,3,A,Mercadotecnia,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,87,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,007,6,Mai
+223165,Sebastián Arturo Jiménez,Ingeniería en Software,Inscrito,3,A,Recursos Humanos,ENERO-ABRIL 2023,Aprobada,92,N/A,Ordinario,ENERO-ABRIL 2023,007,7,Mai
+223165,Sebastián Arturo Jiménez,Ingeniería en Software,Inscrito,3,A,Finanzas Corporativas,MAYO-AGOSTO 2023,Aprobada,89,N/A,Ordinario,MAYO-AGOSTO 2023,007,8,Mai
+223165,Sebastián Arturo Jiménez,Ingeniería en Software,Inscrito,3,A,Derecho Empresarial,MAYO-AGOSTO 2023,Cursando,0,N/A,Ordinario,MAYO-AGOSTO 2023,007,5,Mai
+223172,Camila Esperanza Silva,Ingeniería en Software,Baja Temporal,2,B,Programación Básica,SEPTIEMBRE-DICIEMBRE 2022,Aprobada,76,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2022,004,5,Jose Alberto
+223172,Camila Esperanza Silva,Ingeniería en Software,Baja Temporal,2,B,Lógica Matemática,ENERO-ABRIL 2023,Reprobada,45,N/A,Ordinario,ENERO-ABRIL 2023,004,6,Jose Alberto
+223172,Camila Esperanza Silva,Ingeniería en Software,Baja Temporal,2,B,Lógica Matemática,MAYO-AGOSTO 2023,Reprobada,52,N/A,Repetición,MAYO-AGOSTO 2023,004,6,Jose Alberto
+223189,Maximiliano Gabriel Herrera,Ingeniería en Software,Inscrito,6,A,Inteligencia Artificial,SEPTIEMBRE-DICIEMBRE 2023,Aprobada,94,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2023,005,8,Mai
+223189,Maximiliano Gabriel Herrera,Ingeniería en Software,Inscrito,6,A,Desarrollo de Aplicaciones Web,SEPTIEMBRE-DICIEMBRE 2023,Aprobada,91,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2023,005,7,Mai
+223189,Maximiliano Gabriel Herrera,Ingeniería en Software,Inscrito,6,A,Computación en la Nube,Sin Cursar,Sin cursar,0,N/A,N/A,N/A,005,6,Mai
+223189,Maximiliano Gabriel Herrera,Ingeniería en Software,Inscrito,6,A,Seminario de Tesis,Sin Cursar,Sin cursar,0,N/A,N/A,N/A,005,4,Mai
+223193,Michel Jovanny Vazquez,Ingeniería en Software,Inscrito,6,A,Inteligencia Artificial,SEPTIEMBRE-DICIEMBRE 2023,Aprobada,90,N/A,Ordinario,SEPTIEMBRE-DICIEMBRE 2023,005,8,Mai   

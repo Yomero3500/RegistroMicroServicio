@@ -14,11 +14,19 @@ if (!fs.existsSync(uploadDir)) {
 // Iniciamos la aplicación
 async function startApplication() {
   try {
+    console.log('🚀 Iniciando aplicación...');
+    
+    // Conectar a la base de datos con Sequelize
+    console.log('🔌 Conectando a la base de datos...');
     await database.connect();
+    
+    // Crear e iniciar el servidor
+    console.log('🌐 Iniciando servidor...');
     const server = new Server();
     server.start();
+    
   } catch (error) {
-    console.error('Error al iniciar la aplicación:', error);
+    console.error('💥 Error al iniciar la aplicación:', error.message);
     process.exit(1);
   }
 }
