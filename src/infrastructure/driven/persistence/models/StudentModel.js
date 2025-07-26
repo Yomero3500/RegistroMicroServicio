@@ -31,9 +31,9 @@ class StudentModel {
         }
       },
       estatusAlumno: {
-        type: DataTypes.ENUM('Activo', 'Inactivo', 'Egresado', 'Baja Temporal', 'Baja Definitiva', 'Baja Académica'),
+        type: DataTypes.ENUM('Inscrito','Inactivo', 'Egresado', 'Baja Temporal', 'Baja Definitiva', 'Baja Académica'),
         allowNull: false,
-        defaultValue: 'Activo',
+        defaultValue: 'Inscrito',
         field: 'estatus_alumno'
       },
       cuatrimestreActual: {
@@ -103,7 +103,7 @@ class StudentModel {
         field: 'tutor_academico'
       }
     }, {
-      tableName: 'estudiantes',
+      tableName: 'record_student',
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at'

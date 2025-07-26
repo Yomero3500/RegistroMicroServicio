@@ -10,11 +10,8 @@ class CsvParserImpl {
 
       // Verificar que el archivo existe
       if (!fs.existsSync(filePath)) {
-        console.error('❌ CsvParserImpl: Archivo no encontrado:', filePath);
         return reject(new Error(`Archivo no encontrado: ${filePath}`));
       }
-
-      console.log('📖 CsvParserImpl: Creando stream de lectura...');
       
       fs.createReadStream(filePath)
         .pipe(csv())
@@ -22,12 +19,9 @@ class CsvParserImpl {
           console.log('📋 CsvParserImpl: Headers detectados:', headers);
         })
         .on('data', (data) => {
-          console.log(`📝 CsvParserImpl: Registro ${results.length + 1} leído:`, data);
           results.push(data);
         })
         .on('end', () => {
-          console.log('✅ CsvParserImpl: Parsing completado');
-          console.log('📊 CsvParserImpl: Total de registros parseados:', results.length);
           resolve(results);
         })
         .on('error', (error) => {

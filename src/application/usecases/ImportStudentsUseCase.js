@@ -6,17 +6,79 @@ class ImportStudentsUseCase {
     this.studentRepository = studentRepository;
     this.csvParser = csvParser;
     this.personalService = new PersonalIntegrationService();
+    // Obtener el Sequelize instance para acceder a los modelos de registro
+    const database = require('../../infrastructure/config/database');
+    this.sequelize = database.getSequelize();
+  }
+
+  async createRegistrationRecords(studentData, tutoresValidos) {
+    try {
+      const { Estudiante, Inscripcion } = this.sequelize.models;
+      
+      // Generar el email basado en la matrícula
+      const email = `${studentData.matricula}@ids.upchiapas.edu.mx`;
+
+      // Buscar el ID del tutor usando el nuevo método mejorado
+      let tutor = null;
+      let tutorId = null;
+      
+      if (studentData.tutorAcademico && studentData.tutorAcademico.trim() !== '') {
+        tutor = await this.personalService.getTutorByName(studentData.tutorAcademico);
+        
+        if (tutor) {
+          tutorId = tutor.id;
+          console.log(`✅ Tutor encontrado para ${studentData.matricula}: ID=${tutorId}, Nombre="${tutor.nombre}", Tipo: ${typeof tutorId}`);
+        } else {
+          console.warn(`⚠️ Tutor "${studentData.tutorAcademico}" no encontrado para estudiante ${studentData.matricula}`);
+          
+          // Mostrar tutores disponibles para ayudar en debugging
+          console.log('📋 Tutores válidos disponibles:');
+          tutoresValidos.forEach(t => console.log(`  - ID: ${t.id}, Nombre: "${t.nombre}"`));
+        }
+      }
+
+      console.log(`🔍 Datos para guardar estudiante ${studentData.matricula}:`, {
+        matricula: studentData.matricula,
+        nombre: studentData.nombre,
+        email: email,
+        estatus: studentData.estatusAlumno,
+        tutor_academico_id: tutorId
+      });
+
+      // Crear o actualizar el registro del estudiante
+      const [estudiante, created] = await Estudiante.findOrCreate({
+        where: { matricula: studentData.matricula },
+        defaults: {
+          nombre: studentData.nombre,
+          email: email,
+          estatus: studentData.estatusAlumno,
+          tutor_academico_id: tutorId
+        }
+      });
+
+      // Si el estudiante ya existía, actualizarlo con el tutor_academico_id
+      if (!created && tutorId) {
+        await estudiante.update({
+          tutor_academico_id: tutorId
+        });
+        console.log(`🔄 Estudiante actualizado con tutor_academico_id: ${tutorId}`);
+      }
+
+      console.log(`${created ? 'Creado' : 'Actualizado'} estudiante en nueva estructura:`, estudiante.matricula);
+      
+      return estudiante;
+    } catch (error) {
+      console.error('Error al crear registros en nueva estructura:', error);
+      throw error;
+    }
   }
 
   async execute(filePath) {
     try {
-      console.log('🔍 Iniciando procesamiento de archivo CSV...');
-      console.log('📁 Ruta del archivo:', filePath);
       
       // Verificar disponibilidad del microservicio de Personal
       const personalServiceAvailable = await this.personalService.checkServiceAvailability();
-      console.log('🔗 Microservicio de Personal:', personalServiceAvailable ? 'Disponible' : 'No disponible - usando datos por defecto');
-      
+    
       // Obtener lista de tutores válidos
       const tutoresValidos = await this.personalService.getTutores();
       console.log('👥 Tutores válidos obtenidos:', tutoresValidos.map(t => t.nombre));
@@ -28,30 +90,17 @@ class ImportStudentsUseCase {
       }
       
       const stats = fs.statSync(filePath);
-      console.log('📊 Información del archivo:');
-      console.log('  - Tamaño:', stats.size, 'bytes');
-      console.log('  - Fecha de modificación:', stats.mtime);
+
       
       // Leer una muestra del contenido del archivo para debugging
       const fileContent = fs.readFileSync(filePath, 'utf8');
       const lines = fileContent.split('\n');
-      console.log('📋 Análisis del contenido:');
-      console.log('  - Total de líneas en el archivo:', lines.length);
-      console.log('  - Primera línea (headers):', lines[0]);
-      console.log('  - Segunda línea (primer dato):', lines[1]);
-      console.log('  - Últimas 3 líneas:', lines.slice(-3));
       
       // Parsear el archivo CSV
-      console.log('⚙️ Parseando archivo CSV...');
       const csvData = await this.csvParser.parse(filePath);
       
-      console.log('✅ Archivo CSV parseado exitosamente');
-      console.log('📊 Resultado del parser:');
-      console.log('  - Número de registros parseados:', csvData.length);
       
       if (csvData.length > 0) {
-        console.log('  - Columnas detectadas:', Object.keys(csvData[0]));
-        console.log('  - Primer registro:', csvData[0]);
         if (csvData.length > 1) {
           console.log('  - Segundo registro:', csvData[1]);
         }
@@ -63,18 +112,14 @@ class ImportStudentsUseCase {
 
       for (let i = 0; i < csvData.length; i++) {
         const row = csvData[i];
-        console.log(`🔄 Procesando fila ${i + 1}/${csvData.length}:`, row);
         
         try {
           // Mapear los datos del CSV a la estructura del estudiante
           const studentData = this.mapCsvToStudent(row);
-          console.log('📝 Datos mapeados del estudiante:', studentData);
           
           // Validar el tutor académico con el microservicio de Personal
           if (studentData.tutorAcademico) {
-            const tutorValido = tutoresValidos.find(t => 
-              t.nombre.toLowerCase() === studentData.tutorAcademico.toLowerCase()
-            );
+            const tutorValido = await this.personalService.getTutorByName(studentData.tutorAcademico);
             
             if (!tutorValido) {
               const warning = `Tutor académico "${studentData.tutorAcademico}" no encontrado en el sistema de Personal para el estudiante ${studentData.matricula}`;
@@ -86,21 +131,23 @@ class ImportStudentsUseCase {
                 warning: warning
               });
             } else {
-              console.log(`✅ Tutor académico "${studentData.tutorAcademico}" validado correctamente`);
+              console.log(`✅ Tutor académico "${studentData.tutorAcademico}" validado correctamente como "${tutorValido.nombre}" (ID: ${tutorValido.id})`);
             }
           }
           
           // Crear la entidad Student con validaciones
           const student = Student.create(studentData);
 
-          // Guardar el estudiante
-          console.log(`💾 Guardando estudiante: ${student.matricula} - ${student.nombre}`);
+          // Guardar el estudiante en record_student
           const savedStudent = await this.studentRepository.save(student.toPlainObject());
-          console.log('✅ Estudiante guardado exitosamente:', savedStudent.id);
+
+          // Crear registros en la nueva estructura
+          const nuevoEstudiante = await this.createRegistrationRecords(studentData, tutoresValidos);
+
+          savedStudent.newStructureId = nuevoEstudiante.id;
           results.push(savedStudent);
 
         } catch (error) {
-          console.error(`❌ Error procesando fila ${i + 1}:`, error.message);
           errors.push({
             row: i + 1,
             data: row,
@@ -146,7 +193,7 @@ class ImportStudentsUseCase {
       matricula: normalizedRow.matricula || normalizedRow.matrícula,
       nombre: normalizedRow.nombre,
       carrera: normalizedRow.carrera,
-      estatusAlumno: normalizedRow.estatusalumno || normalizedRow.estatus_alumno || 'Activo',
+      estatusAlumno: normalizedRow.estatusalumno || normalizedRow.estatus_alumno || 'Inscrito',
       cuatrimestreActual: normalizedRow.semestre || normalizedRow.cuatrimestreactual || normalizedRow.cuatrimestre_actual || '1',
       grupoActual: normalizedRow.grupoactual || normalizedRow.grupo_actual,
       materia: normalizedRow.materias || normalizedRow.materia,

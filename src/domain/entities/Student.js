@@ -65,9 +65,9 @@ class Student {
     return new Student(studentData);
   }
 
-  // Método para verificar si el estudiante está activo
+  // Método para verificar si el estudiante está inscrito
   isActive() {
-    return this.estatusAlumno === 'Activo';
+    return this.estatusAlumno === 'Inscrito' || this.estatusAlumno === 'Inscrito';
   }
 
   // Método para verificar si la materia está aprobada
