@@ -1,0 +1,9 @@
+GET http://localhost:3002/api/materias/listar HTTP/1.1
+
+###
+POST http://localhost:3002/api/materias/buscar
+Content-Type: application/json
+
+{
+    "asignatura_id": 1
+}

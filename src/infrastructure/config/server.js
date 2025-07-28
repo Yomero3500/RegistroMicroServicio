@@ -48,6 +48,11 @@ class Server {
     const CreateStudentUseCase = require('../../application/usecases/CreateStudentUseCase');
     const UpdateStudentUseCase = require('../../application/usecases/UpdateStudentUseCase');
     const DeleteStudentUseCase = require('../../application/usecases/DeleteStudentUseCase');
+    
+    // Importar los routers
+    const asignaturaRouter = require('../routes/asignaturaRouter');
+    const gruposRouter = require('../routes/gruposRouter');
+    const materiasRouter = require('../driving/api/routes/materiasRouter');
     const GetStudentHistoryUseCase = require('../../application/usecases/GetStudentHistoryUseCase');
     const MySQLStudentRepo = require('../driven/persistence/MySQLStudentRepo');
     const CsvParserImpl = require('../driven/csv/CsvParserImpl');
@@ -77,6 +82,9 @@ class Server {
 
     // Configurar las rutas
     this.app.use('/alumnos', studentRoutes(studentController, this.upload));
+    this.app.use('/api/asignaturas', asignaturaRouter);
+    this.app.use('/api/grupos', gruposRouter);
+    this.app.use('/api/materias', materiasRouter);
 
     // Ruta de prueba
     this.app.get('/', (req, res) => {

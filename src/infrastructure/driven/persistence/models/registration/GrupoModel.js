@@ -6,11 +6,15 @@ class GrupoModel {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        allowNull: false,
+        validate: {
+          min: 1
+        }
       },
       cohorte_id: {
         type: DataTypes.STRING(3),
-        allowNull: false,
+        allowNull: true,
+        defaultValue: null,
         references: {
           model: 'cohortes',
           key: 'id'
@@ -18,18 +22,15 @@ class GrupoModel {
       },
       grado: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         validate: {
           min: 1
         }
       },
-      letra_grupo: {
-        type: DataTypes.CHAR(1),
-        allowNull: false,
-        validate: {
-          isUppercase: true,
-          isIn: [['A', 'B', 'C', 'D', 'E', 'F']]
-        }
+      profesor_id: {
+        type: DataTypes.STRING(128),
+        allowNull: true,
+        comment: 'UUID del profesor del microservicio de Personal'
       }
     }, {
       tableName: 'grupos',

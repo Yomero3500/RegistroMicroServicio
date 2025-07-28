@@ -1,5 +1,6 @@
 const Student = require('../../domain/entities/Student');
 const PersonalIntegrationService = require('../../infrastructure/services/PersonalIntegrationService');
+const CohorteService = require('../../infrastructure/services/CohorteService');
 
 class ImportStudentsUseCase {
   constructor(studentRepository, csvParser) {
@@ -9,6 +10,7 @@ class ImportStudentsUseCase {
     // Obtener el Sequelize instance para acceder a los modelos de registro
     const database = require('../../infrastructure/config/database');
     this.sequelize = database.getSequelize();
+    this.cohorteService = new CohorteService(this.sequelize);
   }
 
   async createRegistrationRecords(studentData, tutoresValidos) {
@@ -45,6 +47,15 @@ class ImportStudentsUseCase {
         tutor_academico_id: tutorId
       });
 
+      // Validar y procesar el cohorte
+      if (!this.cohorteService.validarMatricula(studentData.matricula)) {
+        throw new Error(`Matrícula inválida: ${studentData.matricula}`);
+      }
+
+      // Procesar el cohorte antes de crear el estudiante
+      const cohorte = await this.cohorteService.processCohorte(studentData.matricula);
+      console.log(`📚 Cohorte procesado para estudiante ${studentData.matricula}: ${cohorte.id}`);
+
       // Crear o actualizar el registro del estudiante
       const [estudiante, created] = await Estudiante.findOrCreate({
         where: { matricula: studentData.matricula },
@@ -52,16 +63,18 @@ class ImportStudentsUseCase {
           nombre: studentData.nombre,
           email: email,
           estatus: studentData.estatusAlumno,
-          tutor_academico_id: tutorId
+          tutor_academico_id: tutorId,
+          cohorte_id: cohorte.id  // Asociar el estudiante con su cohorte
         }
       });
 
-      // Si el estudiante ya existía, actualizarlo con el tutor_academico_id
-      if (!created && tutorId) {
+      // Si el estudiante ya existía, actualizarlo con el tutor_academico_id y cohorte_id
+      if (!created) {
         await estudiante.update({
-          tutor_academico_id: tutorId
+          tutor_academico_id: tutorId,
+          cohorte_id: cohorte.id
         });
-        console.log(`🔄 Estudiante actualizado con tutor_academico_id: ${tutorId}`);
+        console.log(`🔄 Estudiante actualizado con tutor_academico_id: ${tutorId} y cohorte_id: ${cohorte.id}`);
       }
 
       console.log(`${created ? 'Creado' : 'Actualizado'} estudiante en nueva estructura:`, estudiante.matricula);

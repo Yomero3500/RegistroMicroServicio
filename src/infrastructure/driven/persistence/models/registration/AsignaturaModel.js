@@ -33,7 +33,7 @@ class AsignaturaModel {
   }
 
   static associate(models) {
-    // Las asociaciones se definirán cuando sea necesario
+    // Las asociaciones se manejan en otro microservicio
   }
 }
 

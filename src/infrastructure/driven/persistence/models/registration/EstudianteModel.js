@@ -40,6 +40,11 @@ class EstudianteModel {
         type: DataTypes.STRING(128),
         allowNull: true,
         comment: 'UUID del tutor académico del microservicio de Personal'
+      },
+      cohorte_id: {
+        type: DataTypes.STRING(3),
+        allowNull: false,
+        comment: 'ID del cohorte al que pertenece el estudiante'
       }
     }, {
       tableName: 'estudiantes',
@@ -52,11 +57,19 @@ class EstudianteModel {
   }
 
   static associate(models) {
-    const { Inscripcion } = models;
+    const { Inscripcion, Cohorte } = models;
+    
     if (Inscripcion) {
       this.hasMany(Inscripcion, {
         foreignKey: 'estudiante_id',
         as: 'inscripciones'
+      });
+    }
+
+    if (Cohorte) {
+      this.belongsTo(Cohorte, {
+        foreignKey: 'cohorte_id',
+        as: 'cohorte'
       });
     }
   }

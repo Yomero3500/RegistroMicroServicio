@@ -30,7 +30,7 @@ class InscripcionModel {
       },
       estado: {
         type: DataTypes.ENUM('Inscrito', 'Inactivo', 'Egresado', 'Baja Temporal', 'Baja Definitiva', 'Baja Académica'),
-        allowNull: false,
+        allowNull: true,
         defaultValue: 'Inscrito'
       }
     }, {
