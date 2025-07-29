@@ -1,5 +1,6 @@
 const StudentRepository = require('../../../application/ports/output/StudentRepository');
-const database = require('../../config/database');
+const { sequelize } = require('../../config/database');
+const StudentModel = require('./models/StudentModel');
 
 class MySQLStudentRepo extends StudentRepository {
   constructor() {
@@ -10,17 +11,16 @@ class MySQLStudentRepo extends StudentRepository {
 
   async initialize() {
     if (!this.initialized) {
-      console.log('🔄 MySQLStudentRepo: Obteniendo conexión Sequelize...');
-      const sequelize = await database.getConnection();
+      console.log('🔄 MySQLStudentRepo: Inicializando modelo Student...');
       
-      // Los modelos ya están inicializados en database.js, solo necesitamos obtener el modelo
-      this.Student = sequelize.models.Student;
+      // Inicializar el modelo directamente
+      this.Student = StudentModel.init(sequelize);
       
       if (!this.Student) {
-        throw new Error('Modelo Student no encontrado. Asegúrate de que los modelos estén inicializados correctamente.');
+        throw new Error('Error al inicializar el modelo Student.');
       }
       
-      console.log('✅ MySQLStudentRepo: Modelo Student obtenido correctamente');
+      console.log('✅ MySQLStudentRepo: Modelo Student inicializado correctamente');
       this.initialized = true;
     }
   }
@@ -149,6 +149,25 @@ class MySQLStudentRepo extends StudentRepository {
       return true;
     } catch (error) {
       throw new Error(`Error al eliminar estudiante: ${error.message}`);
+    }
+  }
+
+  async getStudentsBasicInfo() {
+    try {
+      await this.initialize();
+      
+      console.log('🔍 MySQLStudentRepo: Obteniendo información básica de estudiantes...');
+      
+      const students = await this.Student.findAll({
+        attributes: ['matricula', 'nombre', 'tutorAcademico'],
+        order: [['matricula', 'ASC']]
+      });
+
+      console.log(`✅ MySQLStudentRepo: ${students.length} estudiantes encontrados`);
+      return students;
+    } catch (error) {
+      console.error('❌ MySQLStudentRepo: Error al obtener información básica de estudiantes:', error);
+      throw new Error(`Error al obtener información básica de estudiantes: ${error.message}`);
     }
   }
 }

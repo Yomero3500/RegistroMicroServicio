@@ -1,13 +1,13 @@
 const ListMateriasUseCase = require('../../../application/usecases/ListMateriasUseCase');
 const GetMateriaByIdUseCase = require('../../../application/usecases/GetMateriaByIdUseCase');
 const FindMultipleMateriasUseCase = require('../../../application/usecases/FindMultipleMateriasUseCase');
-const database = require('../../config/database');
+const { sequelize } = require('../../config/database');
 
 class MateriasController {
   constructor() {
-    this.listMateriasUseCase = new ListMateriasUseCase(database.getSequelize());
-    this.getMateriaByIdUseCase = new GetMateriaByIdUseCase(database.getSequelize());
-    this.findMultipleMateriasUseCase = new FindMultipleMateriasUseCase(database.getSequelize());
+    this.listMateriasUseCase = new ListMateriasUseCase(sequelize);
+    this.getMateriaByIdUseCase = new GetMateriaByIdUseCase(sequelize);
+    this.findMultipleMateriasUseCase = new FindMultipleMateriasUseCase(sequelize);
   }
 
   async listarMaterias(req, res, next) {

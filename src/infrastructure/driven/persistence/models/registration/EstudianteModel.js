@@ -11,7 +11,6 @@ class EstudianteModel {
       matricula: {
         type: DataTypes.STRING(7),
         allowNull: false,
-        unique: true,
         validate: {
           is: /^[0-9]{6}$/
         }
@@ -26,7 +25,6 @@ class EstudianteModel {
       email: {
         type: DataTypes.STRING(255),
         allowNull: false,
-        unique: true,
         validate: {
           isEmail: true
         }
@@ -48,6 +46,22 @@ class EstudianteModel {
       }
     }, {
       tableName: 'estudiantes',
+      indexes: [
+        {
+          unique: true,
+          fields: ['matricula'],
+          name: 'estudiantes_matricula'
+        },
+        {
+          unique: true,
+          fields: ['email'],
+          name: 'estudiantes_email'
+        },
+        {
+          fields: ['cohorte_id'],
+          name: 'estudiantes_cohorte'
+        }
+      ],
       timestamps: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at'

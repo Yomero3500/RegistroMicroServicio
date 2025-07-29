@@ -1,0 +1,27 @@
+{
+  "development": {
+    "username": "root",
+    "password": "MicheladA2",
+    "database": "alumnos",
+    "host": "127.0.0.1",
+    "port": "3306",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "root",
+    "database": "registro_academico_test",
+    "host": "127.0.0.1",
+    "port": "3306",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "root",
+    "database": "registro_academico_prod",
+    "host": "127.0.0.1",
+    "port": "3306",
+    "dialect": "mysql",
+    "logging": false
+  }
+}

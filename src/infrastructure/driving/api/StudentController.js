@@ -1,11 +1,13 @@
 class StudentController {
-  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase) {
+  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase) {
     this.importStudentsUseCase = importStudentsUseCase;
     this.getAllStudentsUseCase = getAllStudentsUseCase;
     this.createStudentUseCase = createStudentUseCase;
     this.updateStudentUseCase = updateStudentUseCase;
     this.deleteStudentUseCase = deleteStudentUseCase;
     this.getStudentHistoryUseCase = getStudentHistoryUseCase;
+    this.getStudentsBasicInfoUseCase = getStudentsBasicInfoUseCase;
+    this.getEstudiantesBasicInfoUseCase = getEstudiantesBasicInfoUseCase;
   }
 
   async importStudents(req, res, next) {
@@ -150,6 +152,52 @@ class StudentController {
       res.status(501).json({ message: 'Endpoint no implementado aún' });
     } catch (error) {
       next(error);
+    }
+  }
+
+  async getStudentsBasicInfo(req, res, next) {
+    try {
+      console.log('🔍 StudentController: Obteniendo información básica de estudiantes...');
+      
+      const students = await this.getStudentsBasicInfoUseCase.execute();
+      
+      console.log(`✅ StudentController: ${students.length} estudiantes obtenidos`);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Información básica de estudiantes obtenida exitosamente',
+        data: students,
+        total: students.length
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error al obtener información básica de estudiantes:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor al obtener la información básica de estudiantes'
+      });
+    }
+  }
+
+  async getEstudiantesBasicInfo(req, res, next) {
+    try {
+      console.log('🔍 StudentController: Obteniendo información básica de estudiantes desde modelo Estudiante...');
+      
+      const estudiantes = await this.getEstudiantesBasicInfoUseCase.execute();
+      
+      console.log(`✅ StudentController: ${estudiantes.length} estudiantes obtenidos`);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Información básica de estudiantes obtenida exitosamente desde modelo Estudiante',
+        data: estudiantes,
+        total: estudiantes.length
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error al obtener información básica de estudiantes:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor al obtener la información básica de estudiantes'
+      });
     }
   }
 }

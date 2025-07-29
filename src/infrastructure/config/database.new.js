@@ -24,13 +24,6 @@ async function connect() {
     console.log('🔌 Intentando autenticar con Sequelize...');
     await sequelize.authenticate();
     console.log('✅ Conexión a la base de datos establecida exitosamente con Sequelize');
-    
-    // Inicializar modelos después de conectar
-    const ModelInitializer = require('../driven/persistence/models');
-    const models = await ModelInitializer.initializeModels(sequelize);
-    console.log('🏗️ Modelos inicializados correctamente');
-    
-    return { sequelize, models };
   } catch (error) {
     console.error('❌ Error al conectar con Sequelize:', error.message);
     console.error('❌ Código de error:', error.original?.code);

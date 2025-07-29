@@ -2,8 +2,8 @@ const ListMateriasUseCase = require('../../application/usecases/ListMateriasUseC
 
 class ListMateriasController {
     constructor() {
-        const database = require('../config/database');
-        this.sequelize = database.getSequelize();
+        const { sequelize } = require('../config/database');
+        this.sequelize = sequelize;
         this.listMateriasUseCase = new ListMateriasUseCase(this.sequelize);
     }
 

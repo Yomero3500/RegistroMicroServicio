@@ -9,11 +9,11 @@ class InscripcionModel {
         autoIncrement: true
       },
       estudiante_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING(7),
         allowNull: false,
         references: {
           model: 'estudiantes',
-          key: 'id'
+          key: 'matricula'
         }
       },
       grupo_id: {
@@ -25,8 +25,9 @@ class InscripcionModel {
         }
       },
       tutor_usuario_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false
+        type: DataTypes.STRING(128),
+        allowNull: false,
+        comment: 'UUID del tutor del microservicio de Personal'
       },
       estado: {
         type: DataTypes.ENUM('Inscrito', 'Inactivo', 'Egresado', 'Baja Temporal', 'Baja Definitiva', 'Baja Académica'),
@@ -48,6 +49,7 @@ class InscripcionModel {
     if (Estudiante) {
       this.belongsTo(Estudiante, {
         foreignKey: 'estudiante_id',
+        targetKey: 'matricula',
         as: 'estudiante'
       });
     }

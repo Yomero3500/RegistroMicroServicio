@@ -48,18 +48,23 @@ class Server {
     const CreateStudentUseCase = require('../../application/usecases/CreateStudentUseCase');
     const UpdateStudentUseCase = require('../../application/usecases/UpdateStudentUseCase');
     const DeleteStudentUseCase = require('../../application/usecases/DeleteStudentUseCase');
+    const GetStudentsBasicInfoUseCase = require('../../application/usecases/GetStudentsBasicInfoUseCase');
+    const GetEstudiantesBasicInfoUseCase = require('../../application/usecases/GetEstudiantesBasicInfoUseCase');
     
     // Importar los routers
     const asignaturaRouter = require('../routes/asignaturaRouter');
     const gruposRouter = require('../routes/gruposRouter');
+    const inscripcionRouter = require('../driving/api/routes/inscripcionRouter')
     const materiasRouter = require('../driving/api/routes/materiasRouter');
     const GetStudentHistoryUseCase = require('../../application/usecases/GetStudentHistoryUseCase');
     const MySQLStudentRepo = require('../driven/persistence/MySQLStudentRepo');
+    const EstudianteRepository = require('../driven/persistence/EstudianteRepository');
     const CsvParserImpl = require('../driven/csv/CsvParserImpl');
     const studentRoutes = require('../driving/api/routes');
 
     // Crear instancias de las dependencias
     const studentRepository = new MySQLStudentRepo();
+    const estudianteRepository = new EstudianteRepository();
     const csvParser = new CsvParserImpl();
     
     // Crear instancias de todos los casos de uso
@@ -69,6 +74,8 @@ class Server {
     const updateStudentUseCase = new UpdateStudentUseCase(studentRepository);
     const deleteStudentUseCase = new DeleteStudentUseCase(studentRepository);
     const getStudentHistoryUseCase = new GetStudentHistoryUseCase(studentRepository);
+    const getStudentsBasicInfoUseCase = new GetStudentsBasicInfoUseCase(studentRepository);
+    const getEstudiantesBasicInfoUseCase = new GetEstudiantesBasicInfoUseCase(estudianteRepository);
 
     // Crear instancia del controlador con todos los casos de uso
     const studentController = new StudentController(
@@ -77,7 +84,9 @@ class Server {
       createStudentUseCase,
       updateStudentUseCase,
       deleteStudentUseCase,
-      getStudentHistoryUseCase
+      getStudentHistoryUseCase,
+      getStudentsBasicInfoUseCase,
+      getEstudiantesBasicInfoUseCase
     );
 
     // Configurar las rutas
@@ -85,6 +94,7 @@ class Server {
     this.app.use('/api/asignaturas', asignaturaRouter);
     this.app.use('/api/grupos', gruposRouter);
     this.app.use('/api/materias', materiasRouter);
+    this.app.use('/api/inscripciones', inscripcionRouter);
 
     // Ruta de prueba
     this.app.get('/', (req, res) => {

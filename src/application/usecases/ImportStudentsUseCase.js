@@ -8,8 +8,8 @@ class ImportStudentsUseCase {
     this.csvParser = csvParser;
     this.personalService = new PersonalIntegrationService();
     // Obtener el Sequelize instance para acceder a los modelos de registro
-    const database = require('../../infrastructure/config/database');
-    this.sequelize = database.getSequelize();
+    const { sequelize } = require('../../infrastructure/config/database');
+    this.sequelize = sequelize;
     this.cohorteService = new CohorteService(this.sequelize);
   }
 

@@ -2,8 +2,8 @@ const CreateAsignaturaUseCase = require('../../application/usecases/CreateAsigna
 
 class CreateAsignaturaController {
     constructor() {
-        const database = require('../../infrastructure/config/database');
-        this.sequelize = database.getSequelize();
+        const { sequelize } = require('../../infrastructure/config/database');
+        this.sequelize = sequelize;
         this.createAsignaturaUseCase = new CreateAsignaturaUseCase(this.sequelize);
     }
 

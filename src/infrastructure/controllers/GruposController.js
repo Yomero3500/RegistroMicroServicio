@@ -2,8 +2,8 @@ const CreateGruposUseCase = require('../../application/usecases/CreateGruposUseC
 
 class GruposController {
     constructor() {
-        const database = require('../config/database');
-        this.sequelize = database.getSequelize();
+        const { sequelize } = require('../config/database');
+        this.sequelize = sequelize;
         this.createGruposUseCase = new CreateGruposUseCase(this.sequelize);
     }
 

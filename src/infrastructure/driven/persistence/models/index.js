@@ -1,10 +1,10 @@
 const StudentModel = require('./StudentModel');
+const AsignaturaModel = require('./registration/AsignaturaModel');
 const { 
   EstudianteModel,
   InscripcionModel,
   GrupoModel,
-  CohorteModel,
-  AsignaturaModel 
+  CohorteModel
 } = require('./registration');
 
 class ModelInitializer {

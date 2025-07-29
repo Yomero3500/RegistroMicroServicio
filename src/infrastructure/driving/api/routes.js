@@ -13,6 +13,16 @@ module.exports = (studentController, upload) => {
     studentController.getAllStudents.bind(studentController)
   );
 
+  // Obtener información básica de estudiantes (matrícula, nombre, ID tutor) - /alumnos/basica
+  router.get('/basica', 
+    studentController.getStudentsBasicInfo.bind(studentController)
+  );
+
+  // Obtener información básica de estudiantes desde modelo Estudiante - /alumnos/estudiantes-basica
+  router.get('/estudiantes-basica', 
+    studentController.getEstudiantesBasicInfo.bind(studentController)
+  );
+
   // Crear nuevo estudiante - /alumnos/crear
   router.post('/crear', 
     studentController.createStudent.bind(studentController)
