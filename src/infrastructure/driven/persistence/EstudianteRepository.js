@@ -41,6 +41,31 @@ class EstudianteRepository {
             throw new Error(`Error al obtener información básica de estudiantes: ${error.message}`);
         }
     }
+
+    async getEstudianteByMatricula(matricula) {
+        try {
+            await this.initialize();
+            
+            console.log(`🔍 EstudianteRepository: Buscando estudiante con matrícula: ${matricula}`);
+            
+            const estudiante = await this.Estudiante.findOne({
+                where: {
+                    matricula: matricula
+                }
+            });
+
+            if (estudiante) {
+                console.log(`✅ EstudianteRepository: Estudiante encontrado: ${estudiante.nombre}`);
+            } else {
+                console.log(`❌ EstudianteRepository: No se encontró estudiante con matrícula: ${matricula}`);
+            }
+            
+            return estudiante;
+        } catch (error) {
+            console.error('❌ EstudianteRepository: Error al buscar estudiante por matrícula:', error);
+            throw new Error(`Error al buscar estudiante por matrícula: ${error.message}`);
+        }
+    }
 }
 
 module.exports = EstudianteRepository;

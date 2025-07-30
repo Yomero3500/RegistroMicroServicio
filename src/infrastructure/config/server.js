@@ -20,12 +20,29 @@ class Server {
     this.app.use(express.json());
     
     // Configuración de multer para archivos CSV
+    const fs = require('fs');
+    // Obtener la ruta del directorio raíz del proyecto
+    const projectRoot = path.resolve(__dirname, '../../../');
+    const uploadDir = path.join(projectRoot, process.env.UPLOAD_DIR || 'uploads');
+    
+    console.log('📂 Directorio del proyecto:', projectRoot);
+    console.log('📁 Directorio de uploads configurado:', uploadDir);
+    
+    // Asegurar que el directorio existe
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+      console.log(`📁 Directorio de uploads creado: ${uploadDir}`);
+    }
+    
     const storage = multer.diskStorage({
       destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        console.log('💾 Multer: Guardando archivo en:', uploadDir);
+        cb(null, uploadDir);
       },
       filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
+        const filename = `${Date.now()}-${file.originalname}`;
+        console.log('📝 Multer: Nombre de archivo generado:', filename);
+        cb(null, filename);
       }
     });
 
@@ -50,6 +67,7 @@ class Server {
     const DeleteStudentUseCase = require('../../application/usecases/DeleteStudentUseCase');
     const GetStudentsBasicInfoUseCase = require('../../application/usecases/GetStudentsBasicInfoUseCase');
     const GetEstudiantesBasicInfoUseCase = require('../../application/usecases/GetEstudiantesBasicInfoUseCase');
+    const GetEstudianteByMatriculaUseCase = require('../../application/usecases/GetEstudianteByMatriculaUseCase');
     
     // Importar los routers
     const asignaturaRouter = require('../routes/asignaturaRouter');
@@ -76,6 +94,7 @@ class Server {
     const getStudentHistoryUseCase = new GetStudentHistoryUseCase(studentRepository);
     const getStudentsBasicInfoUseCase = new GetStudentsBasicInfoUseCase(studentRepository);
     const getEstudiantesBasicInfoUseCase = new GetEstudiantesBasicInfoUseCase(estudianteRepository);
+    const getEstudianteByMatriculaUseCase = new GetEstudianteByMatriculaUseCase(estudianteRepository);
 
     // Crear instancia del controlador con todos los casos de uso
     const studentController = new StudentController(
@@ -86,7 +105,8 @@ class Server {
       deleteStudentUseCase,
       getStudentHistoryUseCase,
       getStudentsBasicInfoUseCase,
-      getEstudiantesBasicInfoUseCase
+      getEstudiantesBasicInfoUseCase,
+      getEstudianteByMatriculaUseCase
     );
 
     // Configurar las rutas

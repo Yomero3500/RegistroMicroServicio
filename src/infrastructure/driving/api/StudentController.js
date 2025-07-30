@@ -1,5 +1,5 @@
 class StudentController {
-  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase) {
+  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase) {
     this.importStudentsUseCase = importStudentsUseCase;
     this.getAllStudentsUseCase = getAllStudentsUseCase;
     this.createStudentUseCase = createStudentUseCase;
@@ -8,6 +8,7 @@ class StudentController {
     this.getStudentHistoryUseCase = getStudentHistoryUseCase;
     this.getStudentsBasicInfoUseCase = getStudentsBasicInfoUseCase;
     this.getEstudiantesBasicInfoUseCase = getEstudiantesBasicInfoUseCase;
+    this.getEstudianteByMatriculaUseCase = getEstudianteByMatriculaUseCase;
   }
 
   async importStudents(req, res, next) {
@@ -198,6 +199,37 @@ class StudentController {
         success: false,
         message: 'Error interno del servidor al obtener la información básica de estudiantes'
       });
+    }
+  }
+
+  async getEstudianteByMatricula(req, res, next) {
+    try {
+      const { matricula } = req.params;
+      console.log(`🔍 StudentController: Buscando estudiante con matrícula: ${matricula}`);
+      
+      const estudiante = await this.getEstudianteByMatriculaUseCase.execute(matricula);
+      
+      console.log(`✅ StudentController: Estudiante encontrado: ${estudiante.nombre}`);
+      
+      res.status(200).json({
+        success: true,
+        message: `Estudiante con matrícula ${matricula} encontrado exitosamente`,
+        data: estudiante
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error al buscar estudiante por matrícula:', error);
+      
+      if (error.message.includes('No se encontró') || error.message.includes('matrícula debe tener')) {
+        res.status(404).json({
+          success: false,
+          message: error.message
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: 'Error interno del servidor al buscar el estudiante'
+        });
+      }
     }
   }
 }

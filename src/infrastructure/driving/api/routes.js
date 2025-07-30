@@ -23,6 +23,11 @@ module.exports = (studentController, upload) => {
     studentController.getEstudiantesBasicInfo.bind(studentController)
   );
 
+  // Obtener estudiante por matrícula desde modelo Estudiante - /alumnos/estudiante/:matricula
+  router.get('/estudiante/:matricula', 
+    studentController.getEstudianteByMatricula.bind(studentController)
+  );
+
   // Crear nuevo estudiante - /alumnos/crear
   router.post('/crear', 
     studentController.createStudent.bind(studentController)
