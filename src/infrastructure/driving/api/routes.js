@@ -23,6 +23,14 @@ module.exports = (studentController, upload) => {
     studentController.getEstudiantesBasicInfo.bind(studentController)
   );
 
+  // ============================================
+  // NUEVO: Obtener estudiantes SIN respuesta a una encuesta
+  // ============================================
+  // GET /alumnos/encuesta/:surveyId/sin-respuesta
+  router.get('/encuesta/:surveyId/sin-respuesta', 
+    studentController.getStudentsWithoutResponse.bind(studentController)
+  );
+
   // Obtener estudiante por matrícula desde modelo Estudiante - /alumnos/estudiante/:matricula
   router.get('/estudiante/:matricula', 
     studentController.getEstudianteByMatricula.bind(studentController)
@@ -53,7 +61,9 @@ module.exports = (studentController, upload) => {
     studentController.getStudentById.bind(studentController)
   );
 
+  // ============================================
   // Mantener endpoints anteriores para compatibilidad
+  // ============================================
   router.post('/students/import', 
     upload.single('file'), 
     studentController.importStudents.bind(studentController)

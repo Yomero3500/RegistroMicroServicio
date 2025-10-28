@@ -1,5 +1,5 @@
 class StudentController {
-  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase) {
+  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase, getStudentsWithoutResponseUseCase) {
     this.importStudentsUseCase = importStudentsUseCase;
     this.getAllStudentsUseCase = getAllStudentsUseCase;
     this.createStudentUseCase = createStudentUseCase;
@@ -9,6 +9,7 @@ class StudentController {
     this.getStudentsBasicInfoUseCase = getStudentsBasicInfoUseCase;
     this.getEstudiantesBasicInfoUseCase = getEstudiantesBasicInfoUseCase;
     this.getEstudianteByMatriculaUseCase = getEstudianteByMatriculaUseCase;
+    this.getStudentsWithoutResponseUseCase = getStudentsWithoutResponseUseCase; 
   }
 
   async importStudents(req, res, next) {
@@ -230,6 +231,43 @@ class StudentController {
           message: 'Error interno del servidor al buscar el estudiante'
         });
       }
+    }
+  }
+
+  async getStudentsWithoutResponse(req, res, next) {
+    try {
+      const { surveyId } = req.params;
+      
+      console.log(`🔍 StudentController: Obteniendo estudiantes sin respuesta para encuesta ID: ${surveyId}`);
+
+      // Validar que surveyId sea un número
+      const surveyIdNum = parseInt(surveyId);
+      if (isNaN(surveyIdNum)) {
+        return res.status(400).json({
+          success: false,
+          message: 'El ID de la encuesta debe ser un número válido'
+        });
+      }
+
+      // Ejecutar caso de uso
+      const result = await this.getStudentsWithoutResponseUseCase.execute(surveyIdNum);
+
+      res.status(200).json(result);
+
+    } catch (error) {
+      console.error('❌ StudentController: Error al obtener estudiantes sin respuesta:', error);
+      
+      if (error.message.includes('no existe')) {
+        return res.status(404).json({
+          success: false,
+          message: error.message
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
     }
   }
 }

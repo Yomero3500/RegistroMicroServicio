@@ -1,11 +1,19 @@
 const StudentModel = require('./StudentModel');
 const AsignaturaModel = require('./registration/AsignaturaModel');
+const PreguntaModel = require('./registration/PreguntaModel')
+const RespuestaModel = require('./registration/RespuestaModel')
+const ParticipacionModel = require('./registration/ParticipacionModel')
+const TokenSurveyModel = require('./registration/TokenEncuestaModel')
 const { 
   EstudianteModel,
   InscripcionModel,
   GrupoModel,
-  CohorteModel
+  CohorteModel,
+  EncuestaModel
 } = require('./registration');
+
+// Variable para almacenar los modelos inicializados
+let initializedModels = null;
 
 class ModelInitializer {
   static async initializeModels(sequelize) {
@@ -16,20 +24,31 @@ class ModelInitializer {
       console.log('📝 Inicializando modelos...');
       const Student = StudentModel.init(sequelize);
       const Estudiante = EstudianteModel.init(sequelize);
+      const TokenSurvey = TokenSurveyModel.init(sequelize);  
       const Inscripcion = InscripcionModel.init(sequelize);
       const Grupo = GrupoModel.init(sequelize);
       const Cohorte = CohorteModel.init(sequelize);
       const Asignatura = AsignaturaModel.init(sequelize);
+      const Question = PreguntaModel.init(sequelize);
+      const Survey = EncuestaModel.init(sequelize)
+      const Respuesta = RespuestaModel.init(sequelize)
+      const Participacion = ParticipacionModel.init(sequelize)
       console.log('✅ Todos los modelos inicializados correctamente');
+
 
       // Crear un objeto con todos los modelos para facilitar las asociaciones
       const models = {
         Student,
         Estudiante,
+        TokenSurvey, 
         Inscripcion,
         Grupo,
         Cohorte,
-        Asignatura
+        Asignatura,
+        Question,
+        Survey,
+        Respuesta,
+        Participacion
       };
 
       console.log('🔗 Configurando asociaciones entre modelos...');
@@ -56,12 +75,23 @@ class ModelInitializer {
         console.log(`  - ${modelName}: ✅`);
       });
 
+      // Guardar los modelos inicializados
+      initializedModels = models;
+
       return models;
     } catch (error) {
       console.error('❌ Error al inicializar modelos:', error.message);
       console.error('Stack trace:', error.stack);
       throw error;
     }
+  }
+
+  // ✅ NUEVO: Método para obtener los modelos inicializados
+  static getModels() {
+    if (!initializedModels) {
+      throw new Error('❌ Los modelos no han sido inicializados. Llama a initializeModels() primero.');
+    }
+    return initializedModels;
   }
 }
 

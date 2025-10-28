@@ -71,7 +71,7 @@ class EstudianteModel {
   }
 
   static associate(models) {
-    const { Inscripcion, Cohorte } = models;
+    const { Inscripcion, Cohorte, Participacion } = models;
     
     if (Inscripcion) {
       this.hasMany(Inscripcion, {
@@ -84,6 +84,14 @@ class EstudianteModel {
       this.belongsTo(Cohorte, {
         foreignKey: 'cohorte_id',
         as: 'cohorte'
+      });
+    }
+
+
+    if (Participacion) {
+      this.model.hasMany(Participacion, {
+        foreignKey: 'id_estudiante',
+        as: 'participaciones',
       });
     }
   }
