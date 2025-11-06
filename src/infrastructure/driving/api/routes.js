@@ -48,6 +48,21 @@ module.exports = (studentController, upload) => {
     studentController.getStudentByMatricula.bind(studentController)
   );
 
+  // Login de alumno por email y password - /alumnos/login
+  router.post('/login',
+    studentController.loginAlumno.bind(studentController)
+  );
+
+  // Login de alumno con Google ID Token - /alumnos/login/google
+  router.post('/login/google',
+    studentController.googleLogin.bind(studentController)
+  );
+
+  // Establecer/actualizar contraseña por email - /alumnos/password
+  router.post('/password',
+    studentController.setAlumnoPasswordByEmail.bind(studentController)
+  );
+
   // Obtener estudiante por ID - /alumnos/:id
   router.get('/:id', 
     studentController.getStudentById.bind(studentController)

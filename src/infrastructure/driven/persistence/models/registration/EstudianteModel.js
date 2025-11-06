@@ -29,6 +29,11 @@ class EstudianteModel {
           isEmail: true
         }
       },
+      password_hash: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        comment: 'Hash de la contraseña del alumno (bcrypt)'
+      },
       estatus: {
         type: DataTypes.ENUM('Inscrito', 'Inactivo', 'Egresado', 'Baja Temporal', 'Baja Definitiva', 'Baja Académica'),
         allowNull: false,

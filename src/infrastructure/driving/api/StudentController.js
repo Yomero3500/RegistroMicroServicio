@@ -1,5 +1,5 @@
 class StudentController {
-  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase) {
+  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase, loginAlumnoUseCase = null, setAlumnoPasswordByEmailUseCase = null, googleLoginAlumnoUseCase = null) {
     this.importStudentsUseCase = importStudentsUseCase;
     this.getAllStudentsUseCase = getAllStudentsUseCase;
     this.createStudentUseCase = createStudentUseCase;
@@ -9,6 +9,9 @@ class StudentController {
     this.getStudentsBasicInfoUseCase = getStudentsBasicInfoUseCase;
     this.getEstudiantesBasicInfoUseCase = getEstudiantesBasicInfoUseCase;
     this.getEstudianteByMatriculaUseCase = getEstudianteByMatriculaUseCase;
+    this.loginAlumnoUseCase = loginAlumnoUseCase;
+    this.setAlumnoPasswordByEmailUseCase = setAlumnoPasswordByEmailUseCase;
+    this.googleLoginAlumnoUseCase = googleLoginAlumnoUseCase;
   }
 
   async importStudents(req, res, next) {
@@ -230,6 +233,60 @@ class StudentController {
           message: 'Error interno del servidor al buscar el estudiante'
         });
       }
+    }
+  }
+
+  async loginAlumno(req, res, next) {
+    try {
+      if (!this.loginAlumnoUseCase) {
+        return res.status(501).json({ success: false, message: 'Login de alumno no está configurado' });
+      }
+
+      const { email, password } = req.body || {};
+      const result = await this.loginAlumnoUseCase.execute(email, password);
+
+      return res.status(result.status).json({
+        success: result.success,
+        message: result.message,
+        data: result.data
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error en loginAlumno:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor en login de alumno' });
+    }
+  }
+
+  async setAlumnoPasswordByEmail(req, res, next) {
+    try {
+      if (!this.setAlumnoPasswordByEmailUseCase) {
+        return res.status(501).json({ success: false, message: 'Endpoint no configurado' });
+      }
+      const { email, password } = req.body || {};
+      const result = await this.setAlumnoPasswordByEmailUseCase.execute(email, password);
+      return res.status(result.status).json({ success: result.success, message: result.message });
+    } catch (error) {
+      console.error('❌ StudentController: Error al establecer contraseña por email:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+  }
+
+  async googleLogin(req, res, next) {
+    try {
+      if (!this.googleLoginAlumnoUseCase) {
+        return res.status(501).json({ success: false, message: 'Login con Google no está configurado' });
+      }
+
+      const { idToken } = req.body || {};
+      const result = await this.googleLoginAlumnoUseCase.execute(idToken);
+
+      return res.status(result.status).json({
+        success: result.success,
+        message: result.message,
+        data: result.data
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error en googleLogin:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor en login con Google' });
     }
   }
 }

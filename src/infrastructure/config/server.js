@@ -10,7 +10,7 @@ const errorHandler = require('../driving/api/errorHandler');
 class Server {
   constructor() {
     this.app = express();
-    this.port = process.env.PORT || 3000;
+    this.port = process.env.PORT || 3002;
     this.setupMiddlewares();
     this.setupRoutes();
   }
@@ -68,6 +68,9 @@ class Server {
     const GetStudentsBasicInfoUseCase = require('../../application/usecases/GetStudentsBasicInfoUseCase');
     const GetEstudiantesBasicInfoUseCase = require('../../application/usecases/GetEstudiantesBasicInfoUseCase');
     const GetEstudianteByMatriculaUseCase = require('../../application/usecases/GetEstudianteByMatriculaUseCase');
+  const LoginAlumnoUseCase = require('../../application/usecases/LoginAlumnoUseCase');
+  const SetAlumnoPasswordByEmailUseCase = require('../../application/usecases/SetAlumnoPasswordByEmailUseCase');
+    const GoogleLoginAlumnoUseCase = require('../../application/usecases/GoogleLoginAlumnoUseCase');
     
     // Importar los routers
     const asignaturaRouter = require('../routes/asignaturaRouter');
@@ -95,6 +98,9 @@ class Server {
     const getStudentsBasicInfoUseCase = new GetStudentsBasicInfoUseCase(studentRepository);
     const getEstudiantesBasicInfoUseCase = new GetEstudiantesBasicInfoUseCase(estudianteRepository);
     const getEstudianteByMatriculaUseCase = new GetEstudianteByMatriculaUseCase(estudianteRepository);
+  const loginAlumnoUseCase = new LoginAlumnoUseCase(estudianteRepository);
+  const setAlumnoPasswordByEmailUseCase = new SetAlumnoPasswordByEmailUseCase(estudianteRepository);
+    const googleLoginAlumnoUseCase = new GoogleLoginAlumnoUseCase(estudianteRepository);
 
     // Crear instancia del controlador con todos los casos de uso
     const studentController = new StudentController(
@@ -106,26 +112,29 @@ class Server {
       getStudentHistoryUseCase,
       getStudentsBasicInfoUseCase,
       getEstudiantesBasicInfoUseCase,
-      getEstudianteByMatriculaUseCase
+      getEstudianteByMatriculaUseCase,
+      loginAlumnoUseCase,
+      setAlumnoPasswordByEmailUseCase,
+      googleLoginAlumnoUseCase
     );
-
     // Configurar las rutas
     this.app.use('/alumnos', studentRoutes(studentController, this.upload));
     this.app.use('/api/asignaturas', asignaturaRouter);
     this.app.use('/api/grupos', gruposRouter);
     this.app.use('/api/materias', materiasRouter);
     this.app.use('/api/inscripciones', inscripcionRouter);
-
     // Ruta de prueba
     this.app.get('/', (req, res) => {
       res.json({ 
         message: 'API de Registro de Estudiantes con Sequelize',
         endpoints: {
-          'GET /api/alumnos/listar': 'Obtener todos los alumnos',
-          'POST /api/alumnos/crear': 'Crear nuevo alumno',
-          'PUT /api/alumnos/:id': 'Actualizar alumno',
-          'DELETE /api/alumnos/:id': 'Eliminar alumno',
-          'POST /api/alumnos/cargar-csv': 'Importar alumnos desde CSV'
+          'GET alumnos/listar': 'Obtener todos los alumnos',
+          'POST alumnos/crear': 'Crear nuevo alumno',
+          'PUT alumnos/:id': 'Actualizar alumno',
+          'DELETE alumnos/:id': 'Eliminar alumno',
+          'POST alumnos/cargar-csv': 'Importar alumnos desde CSV',
+          'POST alumnos/login': 'Iniciar sesión de alumno (email y password)',
+          'POST alumnos/login/google': 'Iniciar sesión con Google ID Token'
         }
       });
     });
