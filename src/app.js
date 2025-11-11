@@ -31,7 +31,7 @@ async function startApplication() {
     server.start();
     
   } catch (error) {
-    console.error('💥 Error al iniciar la aplicación:', error.message);
+    console.error('💥 Error al iniciar la aplicación 1:', error.message);
     process.exit(1);
   }
 }

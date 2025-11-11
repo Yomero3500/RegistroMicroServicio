@@ -4,6 +4,31 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 
+    // Importar el controlador, casos de uso y las rutas
+    const StudentController = require('../driving/api/StudentController');
+    const ImportStudentsUseCase = require('../../application/usecases/ImportStudentsUseCase');
+    const GetAllStudentsUseCase = require('../../application/usecases/GetAllStudentsUseCase');
+    const CreateStudentUseCase = require('../../application/usecases/CreateStudentUseCase');
+    const UpdateStudentUseCase = require('../../application/usecases/UpdateStudentUseCase');
+    const DeleteStudentUseCase = require('../../application/usecases/DeleteStudentUseCase');
+    const GetStudentsBasicInfoUseCase = require('../../application/usecases/GetStudentsBasicInfoUseCase');
+    const GetEstudiantesBasicInfoUseCase = require('../../application/usecases/GetEstudiantesBasicInfoUseCase');
+    const GetEstudianteByMatriculaUseCase = require('../../application/usecases/GetEstudianteByMatriculaUseCase');
+  const LoginAlumnoUseCase = require('../../application/usecases/LoginAlumnoUseCase');
+  const SetAlumnoPasswordByEmailUseCase = require('../../application/usecases/SetAlumnoPasswordByEmailUseCase');
+    const GoogleLoginAlumnoUseCase = require('../../application/usecases/GoogleLoginAlumnoUseCase');
+    
+    // Importar los routers
+    const asignaturaRouter = require('../routes/asignaturaRouter');
+    const gruposRouter = require('../routes/gruposRouter');
+    const inscripcionRouter = require('../driving/api/routes/inscripcionRouter')
+    const materiasRouter = require('../driving/api/routes/materiasRouter');
+    const GetStudentHistoryUseCase = require('../../application/usecases/GetStudentHistoryUseCase');
+    const MySQLStudentRepo = require('../driven/persistence/MySQLStudentRepo');
+    const EstudianteRepository = require('../driven/persistence/EstudianteRepository');
+    const CsvParserImpl = require('../driven/csv/CsvParserImpl');
+    const studentRoutes = require('../driving/api/routes');
+
 // Importar el manejador de errores
 const errorHandler = require('../driving/api/errorHandler');
 
@@ -58,30 +83,7 @@ class Server {
   }
 
   setupRoutes() {
-    // Importar el controlador, casos de uso y las rutas
-    const StudentController = require('../driving/api/StudentController');
-    const ImportStudentsUseCase = require('../../application/usecases/ImportStudentsUseCase');
-    const GetAllStudentsUseCase = require('../../application/usecases/GetAllStudentsUseCase');
-    const CreateStudentUseCase = require('../../application/usecases/CreateStudentUseCase');
-    const UpdateStudentUseCase = require('../../application/usecases/UpdateStudentUseCase');
-    const DeleteStudentUseCase = require('../../application/usecases/DeleteStudentUseCase');
-    const GetStudentsBasicInfoUseCase = require('../../application/usecases/GetStudentsBasicInfoUseCase');
-    const GetEstudiantesBasicInfoUseCase = require('../../application/usecases/GetEstudiantesBasicInfoUseCase');
-    const GetEstudianteByMatriculaUseCase = require('../../application/usecases/GetEstudianteByMatriculaUseCase');
-  const LoginAlumnoUseCase = require('../../application/usecases/LoginAlumnoUseCase');
-  const SetAlumnoPasswordByEmailUseCase = require('../../application/usecases/SetAlumnoPasswordByEmailUseCase');
-    const GoogleLoginAlumnoUseCase = require('../../application/usecases/GoogleLoginAlumnoUseCase');
-    
-    // Importar los routers
-    const asignaturaRouter = require('../routes/asignaturaRouter');
-    const gruposRouter = require('../routes/gruposRouter');
-    const inscripcionRouter = require('../driving/api/routes/inscripcionRouter')
-    const materiasRouter = require('../driving/api/routes/materiasRouter');
-    const GetStudentHistoryUseCase = require('../../application/usecases/GetStudentHistoryUseCase');
-    const MySQLStudentRepo = require('../driven/persistence/MySQLStudentRepo');
-    const EstudianteRepository = require('../driven/persistence/EstudianteRepository');
-    const CsvParserImpl = require('../driven/csv/CsvParserImpl');
-    const studentRoutes = require('../driving/api/routes');
+
 
     // Crear instancias de las dependencias
     const studentRepository = new MySQLStudentRepo();

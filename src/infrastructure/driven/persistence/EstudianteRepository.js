@@ -124,74 +124,6 @@ async getStudentsWithoutResponse(surveyId) {
       ORDER BY e.nombre ASC
     `;
 
-<<<<<<< HEAD
-            if (estudiante) {
-                console.log(`✅ EstudianteRepository: Estudiante encontrado: ${estudiante.nombre}`);
-            } else {
-                console.log(`❌ EstudianteRepository: No se encontró estudiante con matrícula: ${matricula}`);
-            }
-            
-            return estudiante;
-        } catch (error) {
-            console.error('❌ EstudianteRepository: Error al buscar estudiante por matrícula:', error);
-            throw new Error(`Error al buscar estudiante por matrícula: ${error.message}`);
-        }
-    }
-
-    async getEstudianteByEmail(email) {
-        try {
-            await this.initialize();
-
-            console.log(`🔍 EstudianteRepository: Buscando estudiante con email: ${email}`);
-
-            const estudiante = await this.Estudiante.findOne({
-                where: { email },
-                attributes: ['matricula', 'nombre', 'email', 'estatus', 'tutor_academico_id', 'cohorte_id', 'password_hash', 'created_at', 'updated_at']
-            });
-
-            if (estudiante) {
-                console.log(`✅ EstudianteRepository: Estudiante encontrado: ${estudiante.nombre}`);
-            } else {
-                console.log(`❌ EstudianteRepository: No se encontró estudiante con email: ${email}`);
-            }
-
-            return estudiante;
-        } catch (error) {
-            console.error('❌ EstudianteRepository: Error al buscar estudiante por email:', error);
-            throw new Error(`Error al buscar estudiante por email: ${error.message}`);
-        }
-    }
-
-    async updatePasswordByEmail(email, passwordHash) {
-        try {
-            await this.initialize();
-
-            const [updated] = await this.Estudiante.update(
-                { password_hash: passwordHash },
-                { where: { email } }
-            );
-            return updated > 0;
-        } catch (error) {
-            console.error('❌ EstudianteRepository: Error al actualizar password por email:', error);
-            throw new Error(`Error al actualizar password: ${error.message}`);
-        }
-    }
-
-    async updatePasswordByMatricula(matricula, passwordHash) {
-        try {
-            await this.initialize();
-
-            const [updated] = await this.Estudiante.update(
-                { password_hash: passwordHash },
-                { where: { matricula } }
-            );
-            return updated > 0;
-        } catch (error) {
-            console.error('❌ EstudianteRepository: Error al actualizar password por matrícula:', error);
-            throw new Error(`Error al actualizar password: ${error.message}`);
-        }
-    }
-=======
     const estudiantes = await sequelize.query(query, {
       replacements: { surveyId },
       type: sequelize.QueryTypes.SELECT
@@ -205,7 +137,6 @@ async getStudentsWithoutResponse(surveyId) {
     throw new Error(`Error al buscar estudiantes sin respuesta: ${error.message}`);
   }
 }
->>>>>>> 5283bacbcf213a78e6d03453e5014f222e197aff
 }
 
 module.exports = EstudianteRepository;
