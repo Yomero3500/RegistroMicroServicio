@@ -289,6 +289,77 @@ class StudentController {
       res.status(500).json({ success: false, message: 'Error interno del servidor en login con Google' });
     }
   }
+
+  async getStudentsWithoutResponse(req, res, next) {
+    try {
+      const { surveyId } = req.params;
+      console.log(`🔍 StudentController: Obteniendo estudiantes sin respuesta para encuesta: ${surveyId}`);
+      
+      // Por ahora retorna un array vacío - deberás implementar el caso de uso
+      res.status(200).json({
+        success: true,
+        message: `Estudiantes sin respuesta para encuesta ${surveyId}`,
+        data: []
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error al obtener estudiantes sin respuesta:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error interno del servidor al obtener estudiantes sin respuesta' 
+      });
+    }
+  }
+
+  async getStudentByMatricula(req, res, next) {
+    try {
+      const { matricula } = req.params;
+      console.log(`🔍 StudentController: Buscando estudiante con matrícula: ${matricula}`);
+      
+      const result = await this.getEstudianteByMatriculaUseCase.execute(matricula);
+      
+      res.status(200).json({
+        success: true,
+        message: `Estudiante con matrícula ${matricula} encontrado`,
+        data: result
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error al buscar estudiante:', error);
+      res.status(404).json({
+        success: false,
+        message: error.message || 'Estudiante no encontrado'
+      });
+    }
+  }
+
+  async getStudentById(req, res, next) {
+    try {
+      const { id } = req.params;
+      console.log(`🔍 StudentController: Buscando estudiante con ID: ${id}`);
+      
+      // Si tienes un caso de uso para esto, úsalo aquí
+      // Por ahora uso el mismo que getAllStudents y filtro
+      const result = await this.getAllStudentsUseCase.execute();
+      const student = result.data.find(s => s.id === parseInt(id));
+      
+      if (!student) {
+        return res.status(404).json({
+          success: false,
+          message: 'Estudiante no encontrado'
+        });
+      }
+      
+      res.status(200).json({
+        success: true,
+        data: student
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error al buscar estudiante:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
 }
 
 module.exports = StudentController;
