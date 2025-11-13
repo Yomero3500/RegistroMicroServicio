@@ -1,7 +1,7 @@
 // Servicio para integración con el microservicio de Personal
 class PersonalIntegrationService {
   constructor() {
-    this.personalApiUrl = 'https://userservice-production-df93.up.railway.app:3001';
+    this.personalApiUrl = 'https://userservice-production-df93.up.railway.app';
   }
 
   /**

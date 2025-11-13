@@ -1,7 +1,7 @@
-GET http://localhost:3002/api/materias/listar HTTP/1.1
+GET https://registromicroservicio-production.up.railway.app/api/materias/listar HTTP/1.1
 
 ###
-POST http://localhost:3002/api/materias/buscar
+POST https://registromicroservicio-production.up.railway.app/api/materias/buscar
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3002/alumnos/login
+POST https://registromicroservicio-production.up.railway.app/alumnos/login
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3002/alumnos/password
+POST https://registromicroservicio-production.up.railway.app/alumnos/password
 Content-Type: application/json
 
 {

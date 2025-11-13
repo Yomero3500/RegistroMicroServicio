@@ -10,9 +10,9 @@ async function testImport() {
     const fileStream = fs.createReadStream('./estudiantes_expandido.csv');
     form.append('archivo', fileStream);
     
-    console.log('📤 Enviando archivo a http://localhost:3002/alumnos/cargar-csv...');
+    console.log('📤 Enviando archivo a https://registromicroservicio-production.up.railway.app/alumnos/cargar-csv...');
     
-    const response = await fetch('http://localhost:3002/alumnos/cargar-csv', {
+    const response = await fetch('https://registromicroservicio-production.up.railway.app/alumnos/cargar-csv', {
       method: 'POST',
       body: form
     });
