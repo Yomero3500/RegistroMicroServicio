@@ -33,12 +33,21 @@ class ParticipacionRepository {
       await this.initialize();
       
       console.log('🔍 ParticipacionRepository: Creando participación...');
+
       
       const participacion = await this.Participacion.create(participacionData);
       
       console.log(`✅ ParticipacionRepository: Participación creada con ID: ${participacion.id_participacion}`);
       
-      return participacion.get({ plain: true });
+    return {
+      id_participacion: participacion.id_participacion,
+      id_estudiante: participacion.id_estudiante,
+      id_encuesta: participacion.id_encuesta,
+      fecha_respuesta: participacion.fecha_respuesta,
+      estatus: participacion.estatus,
+      createdAt: participacion.createdAt,
+      updatedAt: participacion.updatedAt
+    };
     } catch (error) {
       console.error('❌ ParticipacionRepository: Error al crear participación:', error);
       throw new Error(`Error al crear participación: ${error.message}`);

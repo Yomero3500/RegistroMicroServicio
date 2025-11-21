@@ -18,12 +18,22 @@ class TokenEncuestaModel {
       id_encuesta: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'encuestas', key: 'id_encuesta' }
+        references: { 
+          model: 'encuestas', 
+          key: 'id_encuesta' 
+        },
+        onDelete: 'CASCADE',  // 🔥 Se elimina si se borra la encuesta
+        onUpdate: 'CASCADE'
       },
       id_estudiante: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'estudiantes', key: 'id' }
+        references: { 
+          model: 'estudiantes', 
+          key: 'id' 
+        },
+        onDelete: 'CASCADE',  // 🔥 Se elimina si se borra el estudiante
+        onUpdate: 'CASCADE'
       },
       usado: {
         type: DataTypes.BOOLEAN,
@@ -62,17 +72,23 @@ class TokenEncuestaModel {
   static associate(models) {
     const { Encuesta, Estudiante } = models;
 
+    // 🔥 Relación con Encuesta (con cascada)
     if (Encuesta) {
       this.model.belongsTo(Encuesta, {
         foreignKey: 'id_encuesta',
-        as: 'encuesta'
+        as: 'encuesta',
+        onDelete: 'CASCADE',  // 🔥 Se elimina el token si se elimina la encuesta
+        hooks: true
       });
     }
 
+    // 🔥 Relación con Estudiante (con cascada)
     if (Estudiante) {
       this.model.belongsTo(Estudiante, {
         foreignKey: 'id_estudiante',
-        as: 'estudiante'
+        as: 'estudiante',
+        onDelete: 'CASCADE',  // 🔥 Se elimina el token si se elimina el estudiante
+        hooks: true
       });
     }
   }

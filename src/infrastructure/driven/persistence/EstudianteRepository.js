@@ -73,6 +73,7 @@ class EstudianteRepository {
       console.log(`🔍 EstudianteRepository: Buscando estudiante con ID: ${id}`);
       
       const estudiante = await this.Estudiante.findByPk(id);
+      console.log("estudiante", estudiante)
       
       if (estudiante) {
         console.log(`✅ EstudianteRepository: Estudiante encontrado: ${estudiante.nombre}`);
@@ -135,6 +136,91 @@ async getStudentsWithoutResponse(surveyId) {
   } catch (error) {
     console.error('❌ EstudianteRepository: Error al buscar estudiantes sin respuesta:', error);
     throw new Error(`Error al buscar estudiantes sin respuesta: ${error.message}`);
+  }
+}
+
+
+async getStudentPendingSurveys(studentId) {
+  try {
+    await this.initialize();
+    
+    console.log(`🔍 EstudianteRepository: Obteniendo encuestas PENDIENTES para estudiante ID: ${studentId}`);
+    
+    const query = `
+      SELECT 
+        e.id_encuesta,
+        e.titulo,
+        e.descripcion,
+        e.tipo,
+        (SELECT COUNT(*) FROM preguntas p WHERE p.id_encuesta = e.id_encuesta) as total_preguntas,
+        'pendiente' as estado_estudiante
+      FROM encuestas e
+      WHERE e.id_encuesta NOT IN (
+          SELECT p.id_encuesta 
+          FROM participaciones p 
+          WHERE p.id_estudiante = :studentId 
+            AND p.estatus = 'completada'
+        )
+      ORDER BY e.createdAt DESC
+    `;
+
+    const encuestas = await sequelize.query(query, {
+      replacements: { studentId },
+      type: sequelize.QueryTypes.SELECT
+    });
+
+    console.log(`✅ EstudianteRepository: ${encuestas.length} encuestas PENDIENTES encontradas`);
+    
+    return encuestas;
+  } catch (error) {
+    console.error('❌ EstudianteRepository: Error al obtener encuestas pendientes:', error);
+    throw new Error(`Error al obtener encuestas pendientes: ${error.message}`);
+  }
+}
+
+/**
+ * Obtiene las encuestas RESPONDIDAS de un estudiante
+ * (Encuestas que el estudiante ya completó)
+ * 
+ * @param {number} studentId - ID del estudiante
+ * @returns {Promise<Array>} Lista de encuestas respondidas
+ */
+async getStudentCompletedSurveys(studentId) {
+  try {
+    await this.initialize();
+    
+    console.log(`🔍 EstudianteRepository: Obteniendo encuestas RESPONDIDAS para estudiante ID: ${studentId}`);
+    
+    const query = `
+      SELECT 
+        e.id_encuesta,
+        e.titulo,
+        e.descripcion,
+        e.tipo,
+        p.id_participacion,
+        p.fecha_respuesta,
+        p.estatus as estatus_participacion,
+        (SELECT COUNT(*) FROM preguntas pr WHERE pr.id_encuesta = e.id_encuesta) as total_preguntas,
+        (SELECT COUNT(*) FROM respuestas r WHERE r.id_participacion = p.id_participacion) as total_respuestas,
+        'completada' as estado_estudiante
+      FROM encuestas e
+      INNER JOIN participaciones p ON p.id_encuesta = e.id_encuesta
+      WHERE p.id_estudiante = :studentId
+        AND p.estatus = 'completada'
+      ORDER BY p.fecha_respuesta DESC
+    `;
+
+    const encuestas = await sequelize.query(query, {
+      replacements: { studentId },
+      type: sequelize.QueryTypes.SELECT
+    });
+
+    console.log(`✅ EstudianteRepository: ${encuestas.length} encuestas RESPONDIDAS encontradas`);
+    
+    return encuestas;
+  } catch (error) {
+    console.error('❌ EstudianteRepository: Error al obtener encuestas respondidas:', error);
+    throw new Error(`Error al obtener encuestas respondidas: ${error.message}`);
   }
 }
 }

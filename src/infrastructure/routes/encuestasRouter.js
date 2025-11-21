@@ -1,12 +1,12 @@
 const express = require('express');
 const SurveyController = require('../driving/api/SurveyController');
 
-
 // Importar casos de uso y repositorio
 const SurveyRepository = require('../driven/persistence/SurveyRepository');
 const StudentRepositoryCohorte = require('../driven/persistence/EstudianteRepositoryCohorte')
 const EncuestaMetricasDinamicasRepository = require('../driven/persistence/EncuestaMetricsRepository')
-// EncuestasRouter.js
+
+// Casos de uso existentes
 const DeleteSurveyUseCase = require('../../application/usecases/DeleteSurveyUseCase');
 const CreateSurveyUseCase = require('../../application/usecases/CreateSurveyUseCase');
 const GetCompleteStatsUseCase = require('../../application/usecases/GetCompleteStatsUseCase');
@@ -15,8 +15,12 @@ const ListAllSurveysUseCase = require('../../application/usecases/GetAllSurveysU
 const GetCohortCompleteDataUseCase = require('../../application/usecases/GetCohortCompleteDataUseCase')
 const SendStudentEmailUseCase = require('../../application/usecases/SendStudentEmailUseCase')
 const GetDashboardCompletoUseCase = require('../../application/usecases/GetDashboardCompletoUseCase')
+const GetSurveyWithQuestionsUseCase = require('../../application/usecases/GetSurveyWithQuestionsUseCase')
 const GetSurveysByTypeUseCase = require('../../application/usecases/GetSurveysByTypeUseCase')
-const GetSurveysExcludingTypesUseCase = require('../../application/usecases/GetSurveysExcludingTypesUseCase') 
+const GetSurveysExcludingTypesUseCase = require('../../application/usecases/GetSurveysExcludingTypesUseCase');
+
+// ✅ NUEVOS: Casos de uso para requisitos pendientes
+const SendPendingRequirementsEmailUseCase = require('../../application/usecases/SendPendingRequirementsEmailUseCase');
 const surveyRouter = express.Router();
 
 // Inicializar dependencias
@@ -24,6 +28,7 @@ const surveyRepository = new SurveyRepository();
 const studentRepositoryCohorte = new StudentRepositoryCohorte()
 const encuestaMetricasDinamicasRepository = new EncuestaMetricasDinamicasRepository()
 
+// Instanciar casos de uso existentes
 const createSurveyUseCase = new CreateSurveyUseCase(surveyRepository);
 const deleteSurveyUseCase = new DeleteSurveyUseCase(surveyRepository);
 const listAllSurveysUseCase = new ListAllSurveysUseCase(surveyRepository);
@@ -34,7 +39,11 @@ const sendStudentEmailUseCase = new SendStudentEmailUseCase(surveyRepository)
 const encuestaMetricasDinamicasUseCase = new GetDashboardCompletoUseCase(encuestaMetricasDinamicasRepository)
 const getSurveysByTypeUseCase = new GetSurveysByTypeUseCase(surveyRepository)
 const getSurveysExcludingTypesUseCase = new GetSurveysExcludingTypesUseCase(surveyRepository)
+const getSurveyWithQuestionsUseCase = new GetSurveyWithQuestionsUseCase(surveyRepository)
 
+// ✅ NUEVOS: Instanciar casos de uso para requisitos pendientes
+const sendPendingRequirementsEmailUseCase = new SendPendingRequirementsEmailUseCase(surveyRepository);
+// Instanciar controlador con TODOS los casos de uso
 const surveyController = new SurveyController(
     createSurveyUseCase,
     deleteSurveyUseCase,
@@ -45,11 +54,15 @@ const surveyController = new SurveyController(
     sendStudentEmailUseCase,
     encuestaMetricasDinamicasUseCase,
     getSurveysByTypeUseCase,
-    getSurveysExcludingTypesUseCase
+    getSurveysExcludingTypesUseCase,
+    getSurveyWithQuestionsUseCase,
+    sendPendingRequirementsEmailUseCase,        // ✅ NUEVO
 );
 
-// Rutas
-// POST /api/surveys
+// ==========================================
+// RUTAS EXISTENTES
+// ==========================================
+
 surveyRouter.post('/', (req, res) => {
     surveyController.createSurvey(req, res)
         .then(() => null)
@@ -59,7 +72,6 @@ surveyRouter.post('/', (req, res) => {
         });
 });
 
-// GET /api/surveys
 surveyRouter.get('/', (req, res) => {
     surveyController.getAllSurveys(req, res)
         .then(() => null)
@@ -78,7 +90,6 @@ surveyRouter.get('/by-type', (req, res) => {
         });
 });
 
-// ✅ GET /api/surveys/excluding-types
 surveyRouter.get('/excluding-types', (req, res) => {
     surveyController.getSurveysExcludingTypes(req, res)
         .then(() => null)
@@ -88,7 +99,6 @@ surveyRouter.get('/excluding-types', (req, res) => {
         });
 });
 
-// DELETE /api/surveys/:id
 surveyRouter.delete('/:id', (req, res) => {
     surveyController.deleteSurvey(req, res)
         .then(() => null)
@@ -98,7 +108,6 @@ surveyRouter.delete('/:id', (req, res) => {
         });
 });
 
-// GET /api/surveys/:id/complete-stats
 surveyRouter.get('/:id/stats/complete', (req, res) => {
     surveyController.getCompleteStats(req, res)
         .then(() => null)
@@ -108,7 +117,6 @@ surveyRouter.get('/:id/stats/complete', (req, res) => {
         });
 });
 
-// GET /api/surveys/:id/basic-stats
 surveyRouter.get('/:id/stats/basic', (req, res) => {
     surveyController.getBasicStats(req, res)
         .then(() => null)
@@ -130,7 +138,8 @@ surveyRouter.get('/cohorts/complete', (req, res) => {
     });
 });
 
-  surveyRouter.get('/:id/dashboard',(req, res) => {  surveyController.getDashboardCompleto(req, res)
+surveyRouter.get('/:id/dashboard', (req, res) => {
+  surveyController.getDashboardCompleto(req, res)
     .then(() => null)
     .catch((error) => {
       console.error('❌ Error en la ruta /dashboard/tipo:', error);
@@ -138,9 +147,8 @@ surveyRouter.get('/cohorts/complete', (req, res) => {
         success: false, 
         message: 'Error interno del servidor' 
       });
-    });}
-  );
-
+    });
+});
 
 surveyRouter.post('/email/send', (req, res) => {
   surveyController.sendStudentEmailUse(req, res)
@@ -154,8 +162,38 @@ surveyRouter.post('/email/send', (req, res) => {
     });
 });
 
+surveyRouter.get('/:id/with-questions', (req, res) => {
+  surveyController.getSurveyWithQuestions(req, res)
+    .then(() => null)
+    .catch((error) => {
+      console.error('Error en la ruta /encuestas/with-questions', error); 
+      res.status(500).json({
+        success: false, 
+        message: 'Error interno del servidor al obtener encuesta con preguntas'
+      });
+    });
+});
 
+// ==========================================
+// ✅ NUEVAS RUTAS: REQUISITOS PENDIENTES
+// ==========================================
 
+/**
+ * POST /api/encuestas/requisitos-pendientes/enviar-correo
+ * Envía correo de requisitos pendientes a un estudiante individual
+ */
+surveyRouter.post('/requisitos-pendientes/enviar-correo', (req, res) => {
+    surveyController.sendPendingRequirementsEmail(req, res)
+        .then(() => null)
+        .catch((error) => {
+            console.error('❌ Error en /requisitos-pendientes/enviar-correo:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor al enviar correo de requisitos',
+                error: error.message
+            });
+        });
+});
 
 
 module.exports = surveyRouter;

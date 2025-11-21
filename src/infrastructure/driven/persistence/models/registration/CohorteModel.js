@@ -49,15 +49,24 @@ class CohorteModel {
     return Cohorte;
   }
 
-  static associate(models) {
-    const { Grupo } = models;
-    if (Grupo) {
-      this.hasMany(Grupo, {
-        foreignKey: 'cohorte_id',
-        as: 'grupos'
-      });
-    }
+static associate(models) {
+  const { Grupo, EstrategiaCohorte } = models;
+  
+  if (Grupo) {
+    this.hasMany(Grupo, {
+      foreignKey: 'cohorte_id',
+      as: 'grupos'
+    });
   }
+
+  // ✅ NUEVA RELACIÓN con Estrategias
+  if (EstrategiaCohorte) {
+    this.hasMany(EstrategiaCohorte, {
+      foreignKey: 'cohorte_id',
+      as: 'estrategias'
+    });
+  }
+}
 }
 
 module.exports = CohorteModel;

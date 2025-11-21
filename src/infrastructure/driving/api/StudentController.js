@@ -1,5 +1,5 @@
 class StudentController {
-  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase, loginAlumnoUseCase = null, setAlumnoPasswordByEmailUseCase = null, googleLoginAlumnoUseCase = null) {
+  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase, loginAlumnoUseCase = null, setAlumnoPasswordByEmailUseCase = null, googleLoginAlumnoUseCase = null,      getStudentsWithoutResponseUseCase, getStudentPendingSurveysUseCase, getStudentCompletedSurveysUseCase) {
     this.importStudentsUseCase = importStudentsUseCase;
     this.getAllStudentsUseCase = getAllStudentsUseCase;
     this.createStudentUseCase = createStudentUseCase;
@@ -12,6 +12,9 @@ class StudentController {
     this.loginAlumnoUseCase = loginAlumnoUseCase;
     this.setAlumnoPasswordByEmailUseCase = setAlumnoPasswordByEmailUseCase;
     this.googleLoginAlumnoUseCase = googleLoginAlumnoUseCase;
+    this.getStudentsWithoutResponseUseCase = getStudentsWithoutResponseUseCase;
+    this.getStudentPendingSurveysUseCase = getStudentPendingSurveysUseCase;
+    this.getStudentCompletedSurveysUseCase = getStudentCompletedSurveysUseCase;
   }
 
   async importStudents(req, res, next) {
@@ -99,6 +102,25 @@ class StudentController {
       res.json(result.data);
     } catch (error) {
       next(error);
+    }
+  }
+
+    // hagan un fetch antes de hacer un pull origin
+    async getStudentsWithoutResponse(req, res, next) {
+    try {
+      const { surveyId } = req.params;
+      console.log(`🔍 StudentController: Obteniendo estudiantes sin respuesta para encuesta: ${surveyId}`);
+
+      const response = await this.getStudentsWithoutResponseUseCase.execute(Number(surveyId)); 
+
+      console.log("response", response)
+      res.status(200).json(response);
+    } catch (error) {
+      console.error('❌ StudentController: Error al obtener estudiantes sin respuesta:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error interno del servidor al obtener estudiantes sin respuesta' 
+      });
     }
   }
 
@@ -204,6 +226,79 @@ class StudentController {
       });
     }
   }
+  async getStudentPendingSurveys(req, res, next) {
+    try {
+      const { studentId } = req.params;
+      
+      console.log(`🔍 StudentController: Obteniendo encuestas pendientes para estudiante ID: ${studentId}`);
+
+      // Validar que studentId sea un número
+      const studentIdNum = parseInt(studentId);
+      if (isNaN(studentIdNum)) {
+        return res.status(400).json({
+          success: false,
+          message: 'El ID del estudiante debe ser un número válido'
+        });
+      }
+
+      // Ejecutar caso de uso
+      const result = await this.getStudentPendingSurveysUseCase.execute({ studentId: studentIdNum });
+
+      res.status(200).json(result);
+
+    } catch (error) {
+      console.error('❌ StudentController: Error al obtener encuestas pendientes:', error);
+      
+      if (error.message.includes('No se encontró')) {
+        return res.status(404).json({
+          success: false,
+          message: error.message
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
+
+  async getStudentCompletedSurveys(req, res, next) {
+    try {
+      const { studentId } = req.params;
+      
+      console.log(`🔍 StudentController: Obteniendo encuestas completadas para estudiante ID: ${studentId}`);
+
+      // Validar que studentId sea un número
+      const studentIdNum = parseInt(studentId);
+      if (isNaN(studentIdNum)) {
+        return res.status(400).json({
+          success: false,
+          message: 'El ID del estudiante debe ser un número válido'
+        });
+      }
+
+      // Ejecutar caso de uso
+      const result = await this.getStudentCompletedSurveysUseCase.execute({ studentId: studentIdNum });
+
+      res.status(200).json(result);
+
+    } catch (error) {
+      console.error('❌ StudentController: Error al obtener encuestas completadas:', error);
+      
+      if (error.message.includes('No se encontró')) {
+        return res.status(404).json({
+          success: false,
+          message: error.message
+        });
+      }
+
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
 
   async getEstudianteByMatricula(req, res, next) {
     try {
@@ -287,26 +382,6 @@ class StudentController {
     } catch (error) {
       console.error('❌ StudentController: Error en googleLogin:', error);
       res.status(500).json({ success: false, message: 'Error interno del servidor en login con Google' });
-    }
-  }
-
-  async getStudentsWithoutResponse(req, res, next) {
-    try {
-      const { surveyId } = req.params;
-      console.log(`🔍 StudentController: Obteniendo estudiantes sin respuesta para encuesta: ${surveyId}`);
-      
-      // Por ahora retorna un array vacío - deberás implementar el caso de uso
-      res.status(200).json({
-        success: true,
-        message: `Estudiantes sin respuesta para encuesta ${surveyId}`,
-        data: []
-      });
-    } catch (error) {
-      console.error('❌ StudentController: Error al obtener estudiantes sin respuesta:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Error interno del servidor al obtener estudiantes sin respuesta' 
-      });
     }
   }
 

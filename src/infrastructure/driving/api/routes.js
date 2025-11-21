@@ -31,6 +31,23 @@ module.exports = (studentController, upload) => {
     studentController.getStudentsWithoutResponse.bind(studentController)
   );
 
+
+    // ============================================
+  // NUEVO: Obtener encuestas PENDIENTES de un estudiante
+  // ============================================
+  // GET /alumnos/:studentId/encuestas/pendientes
+  router.get('/:studentId/encuestas/pendientes', 
+    studentController.getStudentPendingSurveys.bind(studentController)
+  );
+
+  // ============================================
+  // NUEVO: Obtener encuestas COMPLETADAS de un estudiante
+  // ============================================
+  // GET /alumnos/:studentId/encuestas/completadas
+  router.get('/:studentId/encuestas/completadas', 
+    studentController.getStudentCompletedSurveys.bind(studentController)
+  );
+
   // Obtener estudiante por matrícula desde modelo Estudiante - /alumnos/estudiante/:matricula
   router.get('/estudiante/:matricula', 
     studentController.getEstudianteByMatricula.bind(studentController)

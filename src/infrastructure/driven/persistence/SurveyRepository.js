@@ -499,6 +499,192 @@ const data = await resend.emails.send({
     throw new Error(`Error al buscar encuesta por ID: ${error.message}`);
   }
 } 
+
+// Agregar al final de la clase SurveyRepository, antes del cierre
+
+/**
+ * Envía correo con requisitos pendientes a un estudiante
+ * @param {string} studentEmail - Email del estudiante
+ * @param {string} studentName - Nombre completo del estudiante
+ * @param {string} matricula - Matrícula del estudiante
+ * @param {Array} requisitosFaltantes - Array con los nombres de los requisitos pendientes
+ * @param {number} numRequisitos - Número total de requisitos pendientes
+ * @returns {Promise} Resultado del envío
+ */
+async sendPendingRequirementsEmail(studentEmail, studentName, matricula, requisitosFaltantes = [], numRequisitos = 0) {
+  try {
+    const { resend } = this.getModel();
+
+    // Formatear lista de requisitos
+    const requisitosHTML = requisitosFaltantes
+      .map((req, index) => `<li style="margin: 8px 0;">${index + 1}. ${req}</li>`)
+      .join('');
+
+    // Determinar nivel de urgencia
+    let nivelUrgencia = 'normal';
+    let colorUrgencia = '#FFA500'; // Naranja
+    let mensajeUrgencia = 'Te recomendamos atender estos requisitos pronto.';
+
+    if (numRequisitos >= 5) {
+      nivelUrgencia = 'alta';
+      colorUrgencia = '#DC2626'; // Rojo
+      mensajeUrgencia = '⚠️ Es urgente que completes estos requisitos para continuar con tu proceso de titulación.';
+    } else if (numRequisitos >= 3) {
+      nivelUrgencia = 'media';
+      colorUrgencia = '#F59E0B'; // Amarillo oscuro
+      mensajeUrgencia = 'Te sugerimos dar seguimiento a estos requisitos en breve.';
+    } else {
+      colorUrgencia = '#3B82F6'; // Azul
+      mensajeUrgencia = 'Estás muy cerca de completar todos los requisitos.';
+    }
+
+    const data = await resend.emails.send({
+      from: process.env.EMAIL_FROM || "Servicios Escolares <onboarding@resend.dev>",
+      to: studentEmail,
+      subject: `Requisitos Pendientes de Titulación - ${numRequisitos} pendiente${numRequisitos > 1 ? 's' : ''}`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Requisitos Pendientes</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                  
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 40px; text-align: center;">
+                      <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 600;">
+                         Requisitos de Titulación
+                      </h1>
+                      <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">
+                        Universidad Politécnica de Chiapas
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Cuerpo del mensaje -->
+                  <tr>
+                    <td style="padding: 40px;">
+                      
+                      <!-- Saludo -->
+                      <h2 style="color: #333; margin: 0 0 10px 0; font-size: 22px;">
+                        Hola ${studentName || 'Estimado(a) estudiante'},
+                      </h2>
+                      
+                      <!-- Información del estudiante -->
+                      <div style="background-color: #f8f9fa; border-left: 4px solid #667eea; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                        <p style="margin: 0; color: #555; font-size: 14px;">
+                          <strong>Matrícula:</strong> ${matricula}
+                        </p>
+                      </div>
+
+                      <!-- Mensaje principal -->
+                      <p style="color: #555; line-height: 1.6; font-size: 15px; margin: 20px 0;">
+                        Te informamos que actualmente tienes <strong style="color: ${colorUrgencia};">${numRequisitos} requisito${numRequisitos > 1 ? 's' : ''} pendiente${numRequisitos > 1 ? 's' : ''}</strong> para completar tu proceso de titulación.
+                      </p>
+
+                      <!-- Badge de urgencia -->
+                      <div style="background-color: ${colorUrgencia}15; border: 2px solid ${colorUrgencia}; border-radius: 6px; padding: 15px; margin: 25px 0;">
+                        <p style="margin: 0; color: ${colorUrgencia}; font-weight: 600; font-size: 14px;">
+                          ${mensajeUrgencia}
+                        </p>
+                      </div>
+
+                      <!-- Lista de requisitos -->
+                      <div style="margin: 30px 0;">
+                        <h3 style="color: #333; font-size: 18px; margin: 0 0 15px 0; border-bottom: 2px solid #667eea; padding-bottom: 10px;">
+                           Requisitos Pendientes:
+                        </h3>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                          ${requisitosHTML}
+                        </ul>
+                      </div>
+
+                      <!-- Instrucciones -->
+                      <div style="background-color: #e0e7ff; border-radius: 6px; padding: 20px; margin: 30px 0;">
+                        <h4 style="color: #4338ca; margin: 0 0 10px 0; font-size: 16px;">
+                           ¿Qué debes hacer?
+                        </h4>
+                        <ol style="color: #555; line-height: 1.8; margin: 0; padding-left: 20px; font-size: 14px;">
+                          <li>Revisa cada requisito pendiente</li>
+                          <li>Completa las encuestas correspondientes en el sistema</li>
+                          <li>Presenta la documentación necesaria</li>
+                          <li>Contacta a Servicios Escolares si tienes dudas</li>
+                        </ol>
+                      </div>
+
+                      <!-- Botón de acción -->
+                      <div style="text-align: center; margin: 35px 0;">
+                        <a href="${process.env.BASE_URL || 'http://localhost:5173'}/estudiante/requisitos" 
+                           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                  color: white; 
+                                  text-decoration: none; 
+                                  padding: 14px 32px; 
+                                  border-radius: 6px; 
+                                  font-weight: 600;
+                                  font-size: 15px;
+                                  display: inline-block;
+                                  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.4);">
+                          Ver Mis Requisitos
+                        </a>
+                      </div>
+
+                      <!-- Nota importante -->
+                      <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
+                        <p style="margin: 0; color: #856404; font-size: 13px;">
+                          <strong>Importante:</strong> Es necesario completar todos los requisitos para poder continuar con tu proceso de titulación. Si ya has completado alguno de estos requisitos, por favor ignora este mensaje o contacta a Servicios Escolares.
+                        </p>
+                      </div>
+
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f8f9fa; padding: 25px 40px; border-top: 1px solid #e0e0e0;">
+                      <p style="margin: 0 0 10px 0; color: #666; font-size: 14px; line-height: 1.6;">
+                        <strong>Atentamente,</strong><br>
+                        Departamento de Servicios Escolares<br>
+                        Universidad Politécnica de Chiapas
+                      </p>
+                      
+                      <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd;">
+                        <p style="margin: 0; color: #999; font-size: 12px; line-height: 1.5;">
+                           Correo enviado automáticamente. Por favor no responder a este mensaje.<br>
+                          Si tienes dudas, comunícate con Servicios Escolares.
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+      `,
+    });
+
+    console.log(`✅ Correo de requisitos enviado a ${studentEmail}`);
+    return {
+      success: true,
+      messageId: data.id,
+      recipient: studentEmail,
+      numRequisitos
+    };
+
+  } catch (error) {
+    console.error('❌ Error al enviar correo de requisitos:', error);
+    throw new Error(`Error al enviar correo: ${error.message}`);
+  }
+}
 }
 
 module.exports = SurveyRepository;

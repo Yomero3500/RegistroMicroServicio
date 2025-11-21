@@ -66,6 +66,16 @@ class EncuestaModel {
         hooks: true
       });
     }
+
+    // ✅ Cascada con Tokens de Encuesta (NUEVO)
+    if (models.TokenEncuesta) {
+      this.model.hasMany(models.TokenEncuesta, {
+        foreignKey: 'id_encuesta',
+        as: 'tokens',
+        onDelete: 'CASCADE',  // 🔥 Elimina tokens al borrar encuesta
+        hooks: true
+      });
+    }
   }
 }
 

@@ -4,6 +4,7 @@ const PreguntaModel = require('./registration/PreguntaModel')
 const RespuestaModel = require('./registration/RespuestaModel')
 const ParticipacionModel = require('./registration/ParticipacionModel')
 const TokenSurveyModel = require('./registration/TokenEncuestaModel')
+const EstrategiaModel = require('./registration/EstrategiaCohorteModel')
 const { 
   EstudianteModel,
   InscripcionModel,
@@ -33,6 +34,7 @@ class ModelInitializer {
       const Survey = EncuestaModel.init(sequelize)
       const Respuesta = RespuestaModel.init(sequelize)
       const Participacion = ParticipacionModel.init(sequelize)
+      const Estrategia = EstrategiaModel.init(sequelize); 
       console.log('✅ Todos los modelos inicializados correctamente');
 
 
@@ -48,7 +50,8 @@ class ModelInitializer {
         Question,
         Survey,
         Respuesta,
-        Participacion
+        Participacion,
+        Estrategia
       };
 
       console.log('🔗 Configurando asociaciones entre modelos...');

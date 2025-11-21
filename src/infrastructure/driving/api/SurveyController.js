@@ -1,15 +1,30 @@
 class SurveyController {
-  constructor(createSurveyUseCase, deleteSurveyUseCase, listAllSurveysUseCase, getCompleteStatsUseCase, getBasicStatsUseCase, getCohortCompleteDataUseCase, sendStudentEmailUseCase, encuestaMetricasDinamicasUseCase, getSurveysByTypeUseCase, getSurveysExcludingTypesUseCase) {
+  constructor(
+    createSurveyUseCase, 
+    deleteSurveyUseCase, 
+    listAllSurveysUseCase, 
+    getCompleteStatsUseCase, 
+    getBasicStatsUseCase, 
+    getCohortCompleteDataUseCase, 
+    sendStudentEmailUseCase, 
+    encuestaMetricasDinamicasUseCase, 
+    getSurveysByTypeUseCase, 
+    getSurveysExcludingTypesUseCase, 
+    getSurveyWithQuestionsUseCase,
+    sendPendingRequirementsEmailUseCase,        // ✅ NUEVO
+  ) {
     this.createSurveyUseCase = createSurveyUseCase;
     this.deleteSurveyUseCase = deleteSurveyUseCase;
     this.listAllSurveysUseCase = listAllSurveysUseCase;
     this.getCompleteStatsUseCase = getCompleteStatsUseCase; 
-    this.getBasicStatsUseCase = getBasicStatsUseCase; // Nuevo caso de uso
+    this.getBasicStatsUseCase = getBasicStatsUseCase;
     this.getCohortCompleteDataUseCase = getCohortCompleteDataUseCase;
-    this.sendStudentEmailUseCase = sendStudentEmailUseCase, 
-    this.encuestaMetricasDinamicasUseCase = encuestaMetricasDinamicasUseCase
+    this.sendStudentEmailUseCase = sendStudentEmailUseCase;
+    this.encuestaMetricasDinamicasUseCase = encuestaMetricasDinamicasUseCase;
     this.getSurveysByTypeUseCase = getSurveysByTypeUseCase;
     this.getSurveysExcludingTypesUseCase = getSurveysExcludingTypesUseCase;
+    this.getSurveyWithQuestionsUseCase = getSurveyWithQuestionsUseCase;
+    this.sendPendingRequirementsEmailUseCase = sendPendingRequirementsEmailUseCase;              // ✅ NUEVO
   }
 
   // 📌 Crear encuesta
@@ -20,7 +35,7 @@ class SurveyController {
       if (!titulo || typeof titulo !== 'string' || titulo.trim().length === 0) {
         return res.status(400).json({ success: false, message: 'El título es obligatorio y debe ser un string válido.' });
       }
-      if (!id_usuario || isNaN(Number(id_usuario))) {
+      if (!id_usuario) {
         return res.status(400).json({ success: false, message: 'El id_usuario es obligatorio y debe ser un número válido.' });
       }
       if (descripcion && typeof descripcion !== 'string') {
@@ -83,11 +98,6 @@ class SurveyController {
     }
   }
 
-  /**
-   * Obtiene encuestas excluyendo ciertos tipos
-   * @route GET /api/surveys/excluding-types
-   * @query tiposExcluir[] - Lista opcional de tipos a excluir
-   */
   async getSurveysExcludingTypes(req, res, next) {
     try {
       const tiposExcluir = req.query.tiposExcluir ? req.query.tiposExcluir.split(',') : ['documento', 'seguimiento', 'final', 'empresa'];
@@ -168,123 +178,108 @@ class SurveyController {
     }
   }
 
-// SurveyController.js
-// Método actualizado para getCohortCompleteData
+  async getCohortCompleteData(req, res, next) {
+    try {
+      const { cohort } = req.query;
 
-async getCohortCompleteData(req, res, next) {
-  try {
-    const { year } = req.query;
+      console.log('📊 Obteniendo datos de cohortes...');
+      const rawData = await this.getCohortCompleteDataUseCase.execute(cohort || null);
 
-    // Validar año si se proporciona
-    if (year && (!/^\d{4}$/.test(year) || Number(year) < 2000 || Number(year) > new Date().getFullYear() + 1)) {
-      return res.status(400).json({ 
+      if (!rawData) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'No se encontraron datos de cohortes.' 
+        });
+      }
+
+      console.log('✅ Datos obtenidos exitosamente');
+      console.log('   Estudiantes:', rawData.students?.length || 0);
+      console.log('   Cohortes:', rawData.cohorts?.length || 0);
+      console.log('   Timeline:', rawData.timeline?.length || 0);
+
+      const responseData = {
+        students: rawData.students || [],
+        statusDistribution: {
+          regular: rawData.statusDistribution?.regular || 0,
+          irregular: rawData.statusDistribution?.irregular || 0, 
+          cohorte: rawData.statusDistribution?.cohorte
+        },
+        tableData: rawData.tableData || [], 
+        graduationRequirements: rawData.graduationRequirements || [], 
+        graduationWithOutRequirements: rawData.graduationWithOutRequirements || [], 
+        timeline: rawData.timeline || [],
+        cohortComparison: rawData.cohortComparison || [],
+        graduationMetrics: {
+          estudiantes_activos: rawData.graduationMetrics?.estudiantes_activos || 0,
+          estudiantes_con_cuatrimestres_completos: rawData.graduationMetrics?.estudiantes_con_cuatrimestres_completos || 0,
+          promedio_grupos: rawData.graduationMetrics?.promedio_grupos || 0,
+          estudiantes_egresados: rawData.graduationMetrics?.estudiantes_egresados || 0,
+          estudiantes_proximo_egreso: rawData.graduationMetrics?.estudiantes_proximo_egreso || 0,
+          porcentaje_avance_promedio: rawData.graduationMetrics?.porcentaje_avance_promedio || 0
+        },
+        cohorts: rawData.cohorts || []
+      };
+
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Datos de cohortes obtenidos correctamente', 
+        data: responseData
+      });
+
+    } catch (error) {
+      console.error('💥 SurveyController: Error al obtener datos de cohortes:', error.message);
+      console.error('   Stack:', error.stack);
+      
+      return res.status(500).json({ 
         success: false, 
-        message: 'El año debe ser un número válido de 4 dígitos entre 2000 y el próximo año.' 
+        message: error.message || 'Error interno del servidor al obtener datos de cohortes',
+        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
-
-    console.log('📊 Obteniendo datos de cohortes...');
-    console.log('   Año filtrado:', year || 'Todos');
-
-    // Ejecutar el caso de uso
-    const rawData = await this.getCohortCompleteDataUseCase.execute(year || null);
-
-    if (!rawData) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'No se encontraron datos de cohortes.' 
-      });
-    }
-
-    console.log('✅ Datos obtenidos exitosamente');
-    console.log('   Estudiantes:', rawData.students?.length || 0);
-    console.log('   Cohortes:', rawData.cohorts?.length || 0);
-    console.log('   Timeline:', rawData.timeline?.length || 0);
-
-    // Transformar la respuesta al formato esperado por el frontend
-    const responseData = {
-      students: rawData.students || [],
-      statusDistribution: {
-        regular: rawData.statusDistribution?.regular || 0,
-        irregular: rawData.statusDistribution?.irregular || 0
-      },
-      tableData: rawData.tableData || [], 
-      graduationRequirements: rawData.graduationRequirements || [], 
-      graduationWithOutRequirements: rawData.graduationWithOutRequirements || [], 
-      timeline: rawData.timeline || [],
-      cohortComparison: rawData.cohortComparison || [],
-      graduationMetrics: {
-        estudiantes_activos: rawData.graduationMetrics?.estudiantes_activos || 0,
-        estudiantes_con_cuatrimestres_completos: rawData.graduationMetrics?.estudiantes_con_cuatrimestres_completos || 0,
-        promedio_grupos: rawData.graduationMetrics?.promedio_grupos || 0,
-        estudiantes_egresados: rawData.graduationMetrics?.estudiantes_egresados || 0,
-        estudiantes_proximo_egreso: rawData.graduationMetrics?.estudiantes_proximo_egreso || 0,
-        porcentaje_avance_promedio: rawData.graduationMetrics?.porcentaje_avance_promedio || 0
-      },
-      cohorts: rawData.cohorts || []
-    };
-
-    return res.status(200).json({ 
-      success: true, 
-      message: 'Datos de cohortes obtenidos correctamente', 
-      data: responseData
-    });
-
-  } catch (error) {
-    console.error('💥 SurveyController: Error al obtener datos de cohortes:', error.message);
-    console.error('   Stack:', error.stack);
-    
-    return res.status(500).json({ 
-      success: false, 
-      message: error.message || 'Error interno del servidor al obtener datos de cohortes',
-      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
   }
-}
 
-async sendStudentEmailUse(req, res, next) {
-  try {
-    const { studentEmail, studentName, surveyName } = req.body;
+  async sendStudentEmailUse(req, res, next) {
+    try {
+      const { studentEmail, studentName, surveyName } = req.body;
 
-    if (!studentEmail || !studentName || !surveyName) {
-      return res.status(400).json({
-        success: false,
-        message: "Faltan datos obligatorios: studentEmail, studentName o surveyName.",
+      if (!studentEmail || !studentName || !surveyName) {
+        return res.status(400).json({
+          success: false,
+          message: "Faltan datos obligatorios: studentEmail, studentName o surveyName.",
+        });
+      }
+
+      const response = await this.sendStudentEmailUseCase.execute(studentEmail, studentName, surveyName);
+
+      if (!response) {
+        return res.status(500).json({
+          success: false,
+          message: "No se pudo enviar el correo al estudiante.",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Correo enviado correctamente a ${studentName} (${studentEmail}) para la encuesta "${surveyName}".`,
+        data: response,
       });
-    }
 
-    const response = await this.sendStudentEmailUseCase.execute(studentEmail,studentName,  surveyName);
-
-    if (!response) {
+    } catch (error) {
+      console.error("💥 SurveyController: Error al enviar correo a estudiante:", error.message);
       return res.status(500).json({
         success: false,
-        message: "No se pudo enviar el correo al estudiante.",
+        message: error.message || "Error interno del servidor al enviar el correo.",
       });
     }
-
-    return res.status(200).json({
-      success: true,
-      message: `Correo enviado correctamente a ${studentName} (${studentEmail}) para la encuesta "${surveyName}".`,
-      data: response,
-    });
-
-  } catch (error) {
-    console.error("💥 SurveyController: Error al enviar correo a estudiante:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Error interno del servidor al enviar el correo.",
-    });
   }
-}
 
-async getDashboardCompleto(req, res) {
+  async getDashboardCompleto(req, res) {
     try {
       const { id } = req.params;
 
       console.log('📊 EncuestaMetricasController: getDashboardCompleto');
       console.log('   ID Encuesta:', id);
 
-      // Ejecutar caso de uso
       const dashboard = await this.encuestaMetricasDinamicasUseCase.execute(id);
 
       return res.status(200).json({
@@ -311,6 +306,68 @@ async getDashboardCompleto(req, res) {
     }
   }
 
+  async getSurveyWithQuestions(req, res, next) {
+    try {
+      const { id } = req.params;
+      
+      console.log(`🔍 SurveyController: Obteniendo encuesta completa ${id}...`);
+      
+      const result = await this.getSurveyWithQuestionsUseCase.execute(id);
+      
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('❌ SurveyController: Error:', error);
+      
+      const statusCode = error.message.includes('No se encontró') ? 404 : 400;
+      
+      res.status(statusCode).json({
+        success: false,
+        message: error.message || 'Error al obtener encuesta con preguntas'
+      });
+    }
+  }
+
+  // ==========================================
+  // ✅ NUEVOS MÉTODOS: REQUISITOS PENDIENTES
+  // ==========================================
+
+  /**
+   * Envía correo de requisitos pendientes a un estudiante individual
+   */
+  async sendPendingRequirementsEmail(req, res, next) {
+    try {
+      const { studentEmail, studentName, matricula, requisitosFaltantes, numRequisitos } = req.body;
+
+      console.log(`📧 SurveyController: Enviando correo de requisitos pendientes a ${studentName} (${matricula})`);
+
+      const result = await this.sendPendingRequirementsEmailUseCase.execute({
+        studentEmail,
+        studentName,
+        matricula,
+        requisitosFaltantes,
+        numRequisitos
+      });
+
+      console.log(`✅ SurveyController: Correo enviado exitosamente a ${studentEmail}`);
+
+      return res.status(200).json(result);
+
+    } catch (error) {
+      console.error('❌ SurveyController: Error al enviar correo de requisitos:', error);
+      
+      if (error.message.includes('requerido') || error.message.includes('formato')) {
+        return res.status(400).json({
+          success: false,
+          message: error.message
+        });
+      }
+
+      return res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor al enviar el correo'
+      });
+    }
+  }
 }
 
 module.exports = SurveyController;
