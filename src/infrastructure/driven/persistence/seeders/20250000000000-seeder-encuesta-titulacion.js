@@ -442,11 +442,12 @@ module.exports = {
           type: 'select', 
           required: true, 
           options: JSON.stringify([
-            { value: 'Inscrito', text: 'Inscrito' },
             { value: 'Regular', text: 'Regular' },
             { value: 'Irregular', text: 'Irregular' },
             { value: 'Baja_temporal', text: 'Baja temporal' },
-            { value: 'Egresado', text: 'Egresado' }
+            { value: 'Egresado', text: 'Egresado' },
+            { value: 'Titulado', text: 'Titulado' },
+            { value: 'Sint_titulo', text: 'Sin título' }
           ]) 
         },
         { 

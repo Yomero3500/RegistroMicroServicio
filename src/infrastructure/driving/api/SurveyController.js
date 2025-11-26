@@ -207,16 +207,8 @@ class SurveyController {
         tableData: rawData.tableData || [], 
         graduationRequirements: rawData.graduationRequirements || [], 
         graduationWithOutRequirements: rawData.graduationWithOutRequirements || [], 
-        timeline: rawData.timeline || [],
+        risk: rawData.risk || {},
         cohortComparison: rawData.cohortComparison || [],
-        graduationMetrics: {
-          estudiantes_activos: rawData.graduationMetrics?.estudiantes_activos || 0,
-          estudiantes_con_cuatrimestres_completos: rawData.graduationMetrics?.estudiantes_con_cuatrimestres_completos || 0,
-          promedio_grupos: rawData.graduationMetrics?.promedio_grupos || 0,
-          estudiantes_egresados: rawData.graduationMetrics?.estudiantes_egresados || 0,
-          estudiantes_proximo_egreso: rawData.graduationMetrics?.estudiantes_proximo_egreso || 0,
-          porcentaje_avance_promedio: rawData.graduationMetrics?.porcentaje_avance_promedio || 0
-        },
         cohorts: rawData.cohorts || []
       };
 
