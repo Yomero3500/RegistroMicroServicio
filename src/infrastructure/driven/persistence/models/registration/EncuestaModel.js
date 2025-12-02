@@ -39,8 +39,8 @@ class EncuestaModel {
     }, {
       tableName: 'encuestas',
       timestamps: true,
-      createdAt: 'createdAt',
-      updatedAt: 'updatedAt'
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     });
 
     return this.model;

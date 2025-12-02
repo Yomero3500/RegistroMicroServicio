@@ -33,8 +33,8 @@ class PreguntaModel {
     }, {
       tableName: 'preguntas',
       timestamps: true,
-      createdAt: 'createdAt',
-      updatedAt: 'updatedAt'
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
     });
 
     return this.model;
