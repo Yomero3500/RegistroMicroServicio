@@ -12,9 +12,24 @@ const sequelize = new Sequelize(
     logging: false,
     dialectOptions: {
       dateStrings: true,
-      typeCast: true
+      typeCast: true,
+      // Configuración para evitar errores con datetime en MySQL modo estricto
+      connectTimeout: 60000
     },
-    timezone: '-06:00'
+    timezone: '-06:00',
+    define: {
+      // Configuración global para timestamps
+      timestamps: true,
+      underscored: true,
+      // Evitar el valor '0000-00-00 00:00:00' usando NULL como default
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
+    },
+    // Desactivar sync en producción para evitar problemas
+    sync: {
+      force: false,
+      alter: process.env.NODE_ENV !== 'production'
+    }
   }
 );
 

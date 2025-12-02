@@ -69,8 +69,9 @@ class ModelInitializer {
         await sequelize.sync({ alter: true });
         console.log('✅ Modelos sincronizados con la base de datos (modo desarrollo)');
       } else {
-        await sequelize.sync();
-        console.log('✅ Modelos sincronizados con la base de datos (modo producción)');
+        // En producción, NO sincronizar para evitar modificaciones en la estructura
+        // La base de datos debe estar previamente configurada con migraciones
+        console.log('ℹ️  Modo producción: Sync desactivado (usar migraciones para cambios de schema)');
       }
 
       console.log('📊 Resumen de modelos inicializados:');

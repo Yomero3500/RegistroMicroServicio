@@ -106,7 +106,9 @@ class StudentModel {
       tableName: 'record_student',
       timestamps: true,
       createdAt: 'created_at',
-      updatedAt: 'updated_at'
+      updatedAt: 'updated_at',
+      // Desactivar sincronización automática en producción
+      sync: process.env.NODE_ENV !== 'production' ? { alter: true } : false
     });
 
     return Student;
