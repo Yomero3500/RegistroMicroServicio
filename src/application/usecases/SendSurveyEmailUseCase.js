@@ -393,7 +393,7 @@ class SendSurveyEmailUseCase {
    * @private
    */
   _generateSurveyUrl(token) {
-    const baseUrl = process.env.BASE_URL || process.env.FRONTEND_URL || 'https://cacei-production.up.railway.app';
+    const baseUrl = 'https://cacei-production.up.railway.app';
     return `${baseUrl}/encuesta/${token}`;
   }
 
