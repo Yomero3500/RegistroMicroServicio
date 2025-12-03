@@ -44,6 +44,9 @@ const errorHandler = require('../driving/api/errorHandler');
 const GetStudentsWithoutResponseUseCase = require('../../application/usecases/GetStudentsWithoutResponseUseCase');
 const SurveyRepository = require('../driven/persistence/SurveyRepository');
 
+// ✅ NUEVO: Importar el modelo de Encuesta directamente
+const EncuestaModel = require('../driven/persistence/models/registration/EncuestaModel');
+
 class Server {
   constructor() {
     this.app = express();
@@ -202,17 +205,20 @@ class Server {
     this.app.use(errorHandler);
   }
 
-  // ← MEJORADO: Método para ejecutar múltiples seeders con verificación individual
+  // ✅ CORREGIDO: Método para ejecutar seeders con inicialización correcta del modelo
   async runSeeders() {
     try {
       console.log('\n🌱 Iniciando ejecución de seeders...\n');
+
+      // ✅ CRÍTICO: Inicializar el modelo antes de usarlo
+      const Encuesta = EncuestaModel.init(sequelize);
 
       // ==========================================
       // SEEDER 1: Test de Estilos de Aprendizaje
       // ==========================================
       console.log('🔍 [1/2] Verificando seeder de Estilos de Aprendizaje...');
       
-      const encuestaEstilosExistente = await sequelize.models.Encuesta?.findOne({
+      const encuestaEstilosExistente = await Encuesta.findOne({
         where: { titulo: 'Test de Estilos de Aprendizaje' }
       });
 
@@ -240,13 +246,13 @@ class Server {
       ];
 
       // Verificar si TODAS las encuestas ya existen
-      const encuestasExistentes = await sequelize.models.Encuesta?.findAll({
+      const encuestasExistentes = await Encuesta.findAll({
         where: { 
           titulo: encuestasTitulacion 
         }
       });
 
-      const titulosExistentes = encuestasExistentes ? encuestasExistentes.map(e => e.titulo) : [];
+      const titulosExistentes = encuestasExistentes.map(e => e.titulo);
       const todasExisten = encuestasTitulacion.every(titulo => titulosExistentes.includes(titulo));
 
       if (todasExisten && encuestasExistentes.length === 5) {
@@ -288,7 +294,7 @@ class Server {
       await sequelize.sync({ alter: false });
       console.log('✅ Base de datos sincronizada');
 
-      // Ejecutar seeders (antes era runSeeder, ahora es runSeeders)
+      // ✅ Ejecutar seeders DESPUÉS de sincronizar la BD
       await this.runSeeders();
 
       // Iniciar servidor
