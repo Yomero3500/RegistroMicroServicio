@@ -161,7 +161,7 @@ async getStudentPendingSurveys(studentId) {
           WHERE p.id_estudiante = :studentId 
             AND p.estatus = 'completada'
         )
-      ORDER BY e.createdAt DESC
+      ORDER BY e.created_at DESC
     `;
 
     const encuestas = await sequelize.query(query, {

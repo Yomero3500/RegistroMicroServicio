@@ -5,7 +5,7 @@ module.exports = {
       // 1️⃣ ENCUESTA DE ESTILOS DE APRENDIZAJE
       // ==========================================
       const encuestaEstilos = await queryInterface.sequelize.query(
-        `INSERT INTO encuestas (titulo, id_usuario, descripcion, tipo, fecha_creacion, updatedAt, createdAt) 
+        `INSERT INTO encuestas (titulo, id_usuario, descripcion, tipo, fecha_creacion, updated_at, created_at) 
          VALUES (:titulo, :id_usuario, :descripcion, :tipo, :fecha, :fecha, :fecha)`,
         {
           replacements: {
@@ -71,8 +71,8 @@ module.exports = {
         id_encuesta: id_encuesta_estilos,
         type: 'multiple',
         required: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        created_at: new Date(),
+        updated_at: new Date()
       }));
 
       await queryInterface.bulkInsert('preguntas', preguntasConEncuestaEstilos);
@@ -83,7 +83,7 @@ module.exports = {
       // 2️⃣ ENCUESTA DE DATOS DEL ESTUDIANTE
       // ==========================================
       const encuestaDatos = await queryInterface.sequelize.query(
-        `INSERT INTO encuestas (titulo, id_usuario, descripcion, tipo, fecha_creacion, updatedAt, createdAt) 
+        `INSERT INTO encuestas (titulo, id_usuario, descripcion, tipo, fecha_creacion, updated_at, created_at) 
          VALUES (:titulo, :id_usuario, :descripcion, :tipo, :fecha, :fecha, :fecha)`,
         {
           replacements: {
@@ -140,8 +140,8 @@ module.exports = {
       const preguntasConEncuestaDatos = preguntasDatos.map((p) => ({
         ...p,
         id_encuesta: id_encuesta_datos,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        created_at: new Date(),
+        updated_at: new Date()
       }));
 
       await queryInterface.bulkInsert('preguntas', preguntasConEncuestaDatos);

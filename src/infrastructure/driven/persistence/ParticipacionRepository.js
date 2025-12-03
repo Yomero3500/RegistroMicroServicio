@@ -45,8 +45,8 @@ class ParticipacionRepository {
       id_encuesta: participacion.id_encuesta,
       fecha_respuesta: participacion.fecha_respuesta,
       estatus: participacion.estatus,
-      createdAt: participacion.createdAt,
-      updatedAt: participacion.updatedAt
+      created_at: participacion.created_at,
+      updated_at: participacion.updated_at
     };
     } catch (error) {
       console.error('❌ ParticipacionRepository: Error al crear participación:', error);
