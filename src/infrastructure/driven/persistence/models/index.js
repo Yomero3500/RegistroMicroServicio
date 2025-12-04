@@ -63,8 +63,9 @@ class ModelInitializer {
       // Sincronizar modelos con la base de datos
       console.log('🔄 Sincronizando modelos con la base de datos...');
       if (process.env.NODE_ENV !== 'production') {
-        await sequelize.sync({ alter: true });
-        console.log('✅ Modelos sincronizados con la base de datos (modo desarrollo)');
+        // Usar force: false y alter: false para evitar problemas con fechas inválidas
+        await sequelize.sync({ force: false, alter: false });
+        console.log('✅ Modelos sincronizados con la base de datos (modo desarrollo - sin alteraciones)');
       } else {
         await sequelize.sync();
         console.log('✅ Modelos sincronizados con la base de datos (modo producción)');

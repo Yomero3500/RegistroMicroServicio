@@ -9,12 +9,9 @@ class StudentModel {
         autoIncrement: true
       },
       matricula: {
-        type: DataTypes.STRING(6),
+        type: DataTypes.STRING(7),
         allowNull: false,
-        validate: {
-          len: [6, 6],
-          isNumeric: true
-        }
+        unique: true
       },
       nombre: {
         type: DataTypes.STRING(255),
@@ -23,90 +20,43 @@ class StudentModel {
           notEmpty: true
         }
       },
-      carrera: {
-        type: DataTypes.STRING(100),
+      email: {
+        type: DataTypes.STRING(255),
         allowNull: false,
+        unique: true,
         validate: {
-          notEmpty: true
+          isEmail: true
         }
       },
-      estatusAlumno: {
+      estatus: {
         type: DataTypes.ENUM('Inscrito','Inactivo', 'Egresado', 'Baja Temporal', 'Baja Definitiva', 'Baja Académica'),
         allowNull: false,
-        defaultValue: 'Inscrito',
-        field: 'estatus_alumno'
+        defaultValue: 'Inscrito'
       },
-      cuatrimestreActual: {
-        type: DataTypes.STRING(10),
+      tutorAcademicoId: {
+        type: DataTypes.STRING(128),
+        allowNull: true,
+        field: 'tutor_academico_id'
+      },
+      cohorteId: {
+        type: DataTypes.STRING(3),
         allowNull: false,
-        field: 'cuatrimestre_actual'
+        field: 'cohorte_id'
       },
-      grupoActual: {
-        type: DataTypes.STRING(10),
-        allowNull: true,
-        field: 'grupo_actual'
-      },
-      materia: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-      },
-      periodo: {
-        type: DataTypes.STRING(50),
-        allowNull: true
-      },
-      estatusMateria: {
-        type: DataTypes.ENUM('Sin cursar', 'Cursando', 'Aprobada', 'Aprobado', 'Reprobada', 'Reprobado'),
-        allowNull: true,
-        defaultValue: 'Sin cursar',
-        field: 'estatus_materia'
-      },
-      final: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        defaultValue: 0,
-        validate: {
-          min: 0,
-          max: 100
-        }
-      },
-      extra: {
+      passwordHash: {
         type: DataTypes.STRING(255),
         allowNull: true,
-        defaultValue: 'N/A'
-      },
-      estatusCardex: {
-        type: DataTypes.STRING(50),
-        allowNull: true,
-        defaultValue: 'Vigente',
-        field: 'estatus_cardex'
-      },
-      periodoCursado: {
-        type: DataTypes.STRING(50),
-        allowNull: true,
-        field: 'periodo_cursado'
-      },
-      planEstudiosClave: {
-        type: DataTypes.STRING(50),
-        allowNull: true,
-        field: 'plan_estudios_clave'
-      },
-      creditos: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        validate: {
-          min: 0
-        }
-      },
-      tutorAcademico: {
-        type: DataTypes.STRING(255),
-        allowNull: true,
-        field: 'tutor_academico'
+        field: 'password_hash'
       }
     }, {
-      tableName: 'record_student',
+      tableName: 'estudiantes',
       timestamps: true,
       createdAt: 'created_at',
-      updatedAt: 'updated_at'
+      updatedAt: 'updated_at',
+      // Evitar que Sequelize intente alterar columnas con valores inválidos
+      sync: {
+        alter: false
+      }
     });
 
     return Student;

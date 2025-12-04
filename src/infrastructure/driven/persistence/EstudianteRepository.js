@@ -66,6 +66,31 @@ class EstudianteRepository {
     }
   }
 
+  async getEstudianteByEmail(email) {
+    try {
+      await this.initialize();
+      
+      console.log(`🔍 EstudianteRepository: Buscando estudiante con email: ${email}`);
+      
+      const estudiante = await this.Estudiante.findOne({
+        where: {
+          email: email
+        }
+      });
+
+      if (estudiante) {
+        console.log(`✅ EstudianteRepository: Estudiante encontrado: ${estudiante.nombre}`);
+      } else {
+        console.log(`❌ EstudianteRepository: No se encontró estudiante con email: ${email}`);
+      }
+      
+      return estudiante;
+    } catch (error) {
+      console.error('❌ EstudianteRepository: Error al buscar estudiante por email:', error);
+      throw new Error(`Error al buscar estudiante por email: ${error.message}`);
+    }
+  }
+
   async findById(id) {
     try {
       await this.initialize();

@@ -12,9 +12,27 @@ const sequelize = new Sequelize(
     logging: false,
     dialectOptions: {
       dateStrings: true,
-      typeCast: true
+      typeCast: function (field, next) {
+        // Manejar fechas inválidas de MySQL
+        if (field.type === 'DATETIME' || field.type === 'TIMESTAMP' || field.type === 'DATE') {
+          const value = field.string();
+          // Si es una fecha inválida, retornar null
+          if (!value || value === '0000-00-00 00:00:00' || value === '0000-00-00') {
+            return null;
+          }
+          return value;
+        }
+        // Para ENUM y otros tipos, usar el comportamiento por defecto
+        return next();
+      },
+      // Permitir fechas inválidas durante ALTER TABLE
+      flags: '-INVALID_DATE'
     },
-    timezone: '-06:00'
+    timezone: '-06:00',
+    define: {
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_unicode_ci'
+    }
   }
 );
 

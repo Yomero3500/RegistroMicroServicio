@@ -1,5 +1,5 @@
 class StudentController {
-  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase, loginAlumnoUseCase = null, setAlumnoPasswordByEmailUseCase = null, googleLoginAlumnoUseCase = null) {
+  constructor(importStudentsUseCase, getAllStudentsUseCase, createStudentUseCase, updateStudentUseCase, deleteStudentUseCase, getStudentHistoryUseCase, getStudentsBasicInfoUseCase, getEstudiantesBasicInfoUseCase, getEstudianteByMatriculaUseCase, loginAlumnoUseCase = null, setAlumnoPasswordByEmailUseCase = null, googleLoginAlumnoUseCase = null, getEstudianteByEmailUseCase = null) {
     this.importStudentsUseCase = importStudentsUseCase;
     this.getAllStudentsUseCase = getAllStudentsUseCase;
     this.createStudentUseCase = createStudentUseCase;
@@ -12,6 +12,7 @@ class StudentController {
     this.loginAlumnoUseCase = loginAlumnoUseCase;
     this.setAlumnoPasswordByEmailUseCase = setAlumnoPasswordByEmailUseCase;
     this.googleLoginAlumnoUseCase = googleLoginAlumnoUseCase;
+    this.getEstudianteByEmailUseCase = getEstudianteByEmailUseCase;
   }
 
   async importStudents(req, res, next) {
@@ -236,6 +237,44 @@ class StudentController {
     }
   }
 
+  async getEstudianteByEmail(req, res, next) {
+    try {
+      if (!this.getEstudianteByEmailUseCase) {
+        return res.status(501).json({ 
+          success: false, 
+          message: 'Búsqueda por email no está configurada' 
+        });
+      }
+
+      const { email } = req.params;
+      console.log(`🔍 StudentController: Buscando estudiante con email: ${email}`);
+      
+      const estudiante = await this.getEstudianteByEmailUseCase.execute(email);
+      
+      console.log(`✅ StudentController: Estudiante encontrado: ${estudiante.nombre}`);
+      
+      res.status(200).json({
+        success: true,
+        message: `Estudiante con email ${email} encontrado exitosamente`,
+        data: estudiante
+      });
+    } catch (error) {
+      console.error('❌ StudentController: Error al buscar estudiante por email:', error);
+      
+      if (error.message.includes('No se encontró') || error.message.includes('formato del email')) {
+        res.status(404).json({
+          success: false,
+          message: error.message
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: 'Error interno del servidor al buscar el estudiante'
+        });
+      }
+    }
+  }
+
   async loginAlumno(req, res, next) {
     try {
       if (!this.loginAlumnoUseCase) {
@@ -245,10 +284,20 @@ class StudentController {
       const { email, password } = req.body || {};
       const result = await this.loginAlumnoUseCase.execute(email, password);
 
+      // Si el login no fue exitoso, devolver solo success y message
+      if (!result.success) {
+        return res.status(result.status).json({
+          success: result.success,
+          message: result.message
+        });
+      }
+
+      // Si fue exitoso, devolver con token y user
       return res.status(result.status).json({
         success: result.success,
         message: result.message,
-        data: result.data
+        token: result.token,
+        user: result.user
       });
     } catch (error) {
       console.error('❌ StudentController: Error en loginAlumno:', error);

@@ -32,20 +32,11 @@ class MySQLStudentRepo extends StudentRepository {
       const savedStudent = await this.Student.create({
         matricula: student.matricula,
         nombre: student.nombre,
-        carrera: student.carrera,
-        estatusAlumno: student.estatusAlumno,
-        cuatrimestreActual: student.cuatrimestreActual,
-        grupoActual: student.grupoActual,
-        materia: student.materia,
-        periodo: student.periodo,
-        estatusMateria: student.estatusMateria,
-        final: student.final,
-        extra: student.extra,
-        estatusCardex: student.estatusCardex,
-        periodoCursado: student.periodoCursado,
-        planEstudiosClave: student.planEstudiosClave,
-        creditos: student.creditos,
-        tutorAcademico: student.tutorAcademico
+        email: student.email,
+        estatus: student.estatus || student.estatusAlumno || 'Inscrito',
+        tutorAcademicoId: student.tutorAcademicoId || student.tutorAcademico,
+        cohorteId: student.cohorteId || student.carrera || '001',
+        passwordHash: student.passwordHash
       });
 
       return savedStudent.toJSON();

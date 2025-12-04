@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 class LoginAlumnoUseCase {
   constructor(estudianteRepository) {
     this.estudianteRepository = estudianteRepository;
@@ -22,13 +24,28 @@ class LoginAlumnoUseCase {
     }
 
     // 2) Aceptar cualquier contraseña; solo validamos que el email exista
+    
+    // 3) Generar token JWT
+    const token = jwt.sign(
+      {
+        id: estudiante.matricula,
+        email: estudiante.email,
+        role: 'student'
+      },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '24h' }
+    );
+
     return {
       success: true,
       status: 200,
-      data: {
-        matricula: estudiante.matricula,
-        nombre: estudiante.nombre,
+      message: 'Login exitoso',
+      token: token,
+      user: {
+        id: estudiante.matricula,
         email: estudiante.email,
+        name: estudiante.nombre,
+        role: 'student',
         estatus: estudiante.estatus,
         tutor_academico_id: estudiante.tutor_academico_id,
         cohorte_id: estudiante.cohorte_id

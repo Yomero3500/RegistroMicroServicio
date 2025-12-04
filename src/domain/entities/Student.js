@@ -5,6 +5,12 @@ class Student {
     id,
     matricula,
     nombre,
+    email,
+    estatus,
+    tutorAcademicoId,
+    cohorteId,
+    passwordHash,
+    // Mantener compatibilidad con campos legacy
     carrera,
     estatusAlumno,
     cuatrimestreActual,
@@ -23,8 +29,15 @@ class Student {
     this.id = id;
     this.matricula = matricula;
     this.nombre = nombre;
-    this.carrera = carrera;
-    this.estatusAlumno = estatusAlumno;
+    this.email = email;
+    this.estatus = estatus || estatusAlumno || 'Inscrito';
+    this.tutorAcademicoId = tutorAcademicoId || tutorAcademico;
+    this.cohorteId = cohorteId || carrera;
+    this.passwordHash = passwordHash;
+    
+    // Campos legacy para compatibilidad
+    this.carrera = carrera || cohorteId;
+    this.estatusAlumno = estatusAlumno || estatus;
     this.cuatrimestreActual = cuatrimestreActual;
     this.grupoActual = grupoActual;
     this.materia = materia;
@@ -36,7 +49,7 @@ class Student {
     this.periodoCursado = periodoCursado;
     this.planEstudiosClave = planEstudiosClave;
     this.creditos = creditos;
-    this.tutorAcademico = tutorAcademico;
+    this.tutorAcademico = tutorAcademico || tutorAcademicoId;
   }
 
   static create(studentData) {
@@ -44,22 +57,17 @@ class Student {
     Validators.validateNotEmpty(studentData.matricula, 'matrícula');
     Validators.validateMatricula(studentData.matricula);
     Validators.validateNotEmpty(studentData.nombre, 'nombre');
-    Validators.validateNotEmpty(studentData.carrera, 'carrera');
     
-    // Validar calificación final si se proporciona
-    if (studentData.final !== undefined && studentData.final !== null) {
-      const finalNum = parseInt(studentData.final);
-      if (isNaN(finalNum) || finalNum < 0 || finalNum > 100) {
-        throw new Error('La calificación final debe ser un número entre 0 y 100');
+    // Validar email si se proporciona
+    if (studentData.email) {
+      if (!Validators.validateEmail(studentData.email)) {
+        throw new Error('Email inválido');
       }
     }
-
-    // Validar créditos si se proporcionan
-    if (studentData.creditos !== undefined && studentData.creditos !== null) {
-      const creditosNum = parseInt(studentData.creditos);
-      if (isNaN(creditosNum) || creditosNum < 0) {
-        throw new Error('Los créditos deben ser un número positivo');
-      }
+    
+    // Validar cohorteId o carrera
+    if (!studentData.cohorteId && !studentData.carrera) {
+      throw new Error('Se requiere cohorteId o carrera');
     }
 
     return new Student(studentData);
@@ -67,7 +75,7 @@ class Student {
 
   // Método para verificar si el estudiante está inscrito
   isActive() {
-    return this.estatusAlumno === 'Inscrito' || this.estatusAlumno === 'Inscrito';
+    return this.estatus === 'Inscrito' || this.estatusAlumno === 'Inscrito';
   }
 
   // Método para verificar si la materia está aprobada
@@ -81,6 +89,11 @@ class Student {
       id: this.id,
       matricula: this.matricula,
       nombre: this.nombre,
+      email: this.email,
+      estatus: this.estatus,
+      tutorAcademicoId: this.tutorAcademicoId,
+      cohorteId: this.cohorteId,
+      // Incluir campos legacy para compatibilidad
       carrera: this.carrera,
       estatusAlumno: this.estatusAlumno,
       cuatrimestreActual: this.cuatrimestreActual,

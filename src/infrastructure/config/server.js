@@ -17,6 +17,7 @@ const path = require('path');
   const LoginAlumnoUseCase = require('../../application/usecases/LoginAlumnoUseCase');
   const SetAlumnoPasswordByEmailUseCase = require('../../application/usecases/SetAlumnoPasswordByEmailUseCase');
     const GoogleLoginAlumnoUseCase = require('../../application/usecases/GoogleLoginAlumnoUseCase');
+    const GetEstudianteByEmailUseCase = require('../../application/usecases/GetEstudianteByEmailUseCase');
     
     // Importar los routers
     const asignaturaRouter = require('../routes/asignaturaRouter');
@@ -133,6 +134,7 @@ class Server {
   const loginAlumnoUseCase = new LoginAlumnoUseCase(estudianteRepository);
   const setAlumnoPasswordByEmailUseCase = new SetAlumnoPasswordByEmailUseCase(estudianteRepository);
     const googleLoginAlumnoUseCase = new GoogleLoginAlumnoUseCase(estudianteRepository);
+    const getEstudianteByEmailUseCase = new GetEstudianteByEmailUseCase(estudianteRepository);
 
     // Crear instancia del controlador con todos los casos de uso
     const studentController = new StudentController(
@@ -147,7 +149,8 @@ class Server {
       getEstudianteByMatriculaUseCase,
       loginAlumnoUseCase,
       setAlumnoPasswordByEmailUseCase,
-      googleLoginAlumnoUseCase
+      googleLoginAlumnoUseCase,
+      getEstudianteByEmailUseCase
     );
     // Configurar las rutas
     this.app.use('/alumnos', studentRoutes(studentController, this.upload));
@@ -165,6 +168,7 @@ class Server {
           'PUT alumnos/:id': 'Actualizar alumno',
           'DELETE alumnos/:id': 'Eliminar alumno',
           'POST alumnos/cargar-csv': 'Importar alumnos desde CSV',
+          'GET alumnos/email/:email': 'Obtener alumno por email',
           'POST alumnos/login': 'Iniciar sesión de alumno (email y password)',
           'POST alumnos/login/google': 'Iniciar sesión con Google ID Token'
         }

@@ -36,6 +36,11 @@ module.exports = (studentController, upload) => {
     studentController.getEstudianteByMatricula.bind(studentController)
   );
 
+  // Obtener estudiante por email - /alumnos/email/:email
+  router.get('/email/:email', 
+    studentController.getEstudianteByEmail.bind(studentController)
+  );
+
   // Crear nuevo estudiante - /alumnos/crear
   router.post('/crear', 
     studentController.createStudent.bind(studentController)
