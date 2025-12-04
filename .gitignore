@@ -40,3 +40,8 @@ coverage/
 # Production
 dist/
 build/
+
+# Railway configuration (local only)
+railway-manager.ps1
+RAILWAY_CONFIG.md
+.railway/
