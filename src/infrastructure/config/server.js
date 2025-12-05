@@ -33,6 +33,7 @@ const { sequelize }= require('../config/database'); // ← AGREGAR: importar tu 
     const respuestasRouter = require('../routes/respuestasRouter')
     const preguntasRouter = require('../routes/preguntasRouter')
     const publicSurveyRouter = require('../routes/publicSurveyRouter')
+    const prediccionRiesgoRouter = require('../routes/prediccionRiesgoRouter')
     const GetStudentHistoryUseCase = require('../../application/usecases/GetStudentHistoryUseCase');
     const MySQLStudentRepo = require('../driven/persistence/MySQLStudentRepo');
     const EstudianteRepository = require('../driven/persistence/EstudianteRepository');
@@ -184,6 +185,7 @@ class Server {
     this.app.use('/api/respuestas', respuestasRouter)
     this.app.use('/api/preguntas', preguntasRouter)
     this.app.use('/api/public', publicSurveyRouter)
+    this.app.use('/api/prediccion-riesgo', prediccionRiesgoRouter)
 
     // Ruta de prueba
     this.app.get('/', (req, res) => {
