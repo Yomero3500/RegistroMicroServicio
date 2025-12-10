@@ -26,20 +26,18 @@ class LoginAlumnoUseCase {
       };
     }
 
-    // 2) Datos del estudiante para el JWT
-    const estudianteData = {
-      matricula: estudiante.matricula,
-      nombre: estudiante.nombre,
+    // 2) Estructura de datos para el JWT
+    const tokenPayload = {
+      id: estudiante.matricula,
       email: estudiante.email,
-      estatus: estudiante.estatus,
-      tutor_academico_id: estudiante.tutor_academico_id,
-      cohorte_id: estudiante.cohorte_id
+      name: estudiante.nombre,
+      role: 'student'
     };
 
     // 3) Generar JWT con los datos encriptados
     try {
       const token = jwt.sign(
-        estudianteData,
+        tokenPayload,
         this.jwtSecret,
         { expiresIn: this.jwtExpires }
       );
@@ -50,7 +48,6 @@ class LoginAlumnoUseCase {
         message: 'Login exitoso',
         data: {
           token,
-          estudiante: estudianteData,
           expiresIn: this.jwtExpires
         }
       };
