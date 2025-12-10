@@ -340,10 +340,16 @@ class StudentController {
       const { email, password } = req.body || {};
       const result = await this.loginAlumnoUseCase.execute(email, password);
 
+      if (!result.success) {
+        return res.status(result.status).json({
+          success: result.success,
+          message: result.message
+        });
+      }
+
       return res.status(result.status).json({
-        success: result.success,
-        message: result.message,
-        data: result.data
+        token: result.data?.token,
+        expiresIn: result.data?.expiresIn
       });
     } catch (error) {
       console.error('❌ StudentController: Error en loginAlumno:', error);
